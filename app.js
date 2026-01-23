@@ -1,5 +1,25 @@
 // Product Studio JavaScript
 
+// Notification System
+function showNotification(message) {
+    // Create notification element if it doesn't exist
+    let notification = document.getElementById('notification');
+    if (!notification) {
+        notification = document.createElement('div');
+        notification.id = 'notification';
+        notification.setAttribute('role', 'alert');
+        notification.setAttribute('aria-live', 'polite');
+        document.body.appendChild(notification);
+    }
+    
+    notification.textContent = message;
+    notification.className = 'notification show';
+    
+    setTimeout(() => {
+        notification.className = 'notification';
+    }, 4000);
+}
+
 // Tab Navigation
 document.addEventListener('DOMContentLoaded', function() {
     const tabButtons = document.querySelectorAll('.tab-button');
@@ -29,7 +49,7 @@ function generateProblemFraming() {
     const assumptions = document.getElementById('pf-assumptions').value;
     
     if (!problem || !who || !impact) {
-        alert('Please fill in at least the Problem Statement, Who is affected, and Impact fields.');
+        showNotification('Please fill in at least the Problem Statement, Who is affected, and Impact fields.');
         return;
     }
     
@@ -69,7 +89,7 @@ function generateRootCause() {
     const factors = document.getElementById('rca-factors').value;
     
     if (!symptom) {
-        alert('Please describe the observed symptom.');
+        showNotification('Please describe the observed symptom.');
         return;
     }
     
@@ -112,7 +132,7 @@ function generateRiskAssessment() {
     const mitigation = document.getElementById('rm-mitigation').value;
     
     if (!decision) {
-        alert('Please describe the decision being considered.');
+        showNotification('Please describe the decision being considered.');
         return;
     }
     
@@ -164,7 +184,7 @@ function generateTradeoffAnalysis() {
     const tradeoffs = document.getElementById('te-tradeoffs').value;
     
     if (!context || !optionADesc || !optionBDesc) {
-        alert('Please fill in the decision context and both options.');
+        showNotification('Please fill in the decision context and both options.');
         return;
     }
     
@@ -239,7 +259,7 @@ function generateNextSteps() {
     const stakeholders = document.getElementById('ns-stakeholders').value;
     
     if (!situation || !direction) {
-        alert('Please describe the current situation and proposed direction.');
+        showNotification('Please describe the current situation and proposed direction.');
         return;
     }
     
@@ -260,7 +280,7 @@ function generateNextSteps() {
     // Provide appropriate next steps based on confidence
     guidance += 'RECOMMENDED APPROACH:\n\n';
     
-    const confidenceLevel = confidence.toLowerCase();
+    const confidenceLevel = confidence ? confidence.toLowerCase() : '';
     
     if (confidenceLevel.includes('low')) {
         guidance += '⚠️ Low Confidence - Proceed with Caution:\n';
