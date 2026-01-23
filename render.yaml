@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: product-playground
+    runtime: python
+    plan: free
+    buildCommand: pip install -r product-thinking-studio/requirements.txt && pip install gunicorn
+    startCommand: gunicorn --chdir product-thinking-studio --bind 0.0.0.0:$PORT flask_app:app
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o
+      - key: TEMPERATURE
+        value: "0.7"
+      - key: MAX_TOKENS
+        value: "4000"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.10.0
