@@ -4,7 +4,7 @@ services:
     runtime: python
     plan: free
     buildCommand: pip install -r product-thinking-studio/requirements.txt && pip install gunicorn
-    startCommand: gunicorn --chdir product-thinking-studio --bind 0.0.0.0:$PORT flask_app:app
+    startCommand: cd product-thinking-studio && gunicorn -c gunicorn.conf.py flask_app:app
     envVars:
       - key: OPENAI_API_KEY
         sync: false
