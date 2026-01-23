@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Studio - Decision Support for Product Managers</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Product Studio</h1>
+            <p class="tagline">Decision-Support for Product Managers</p>
+            <p class="subtitle">Structured thinking frameworks to reason through ambiguous product situations</p>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="tab-button active" data-tab="problem-framing">Problem Framing</button>
+            <button class="tab-button" data-tab="root-cause">Root Cause Analysis</button>
+            <button class="tab-button" data-tab="risk-management">Risk Management</button>
+            <button class="tab-button" data-tab="tradeoff-eval">Tradeoff Evaluation</button>
+            <button class="tab-button" data-tab="next-steps">Next Steps Guidance</button>
+        </nav>
+
+        <main>
+            <!-- Problem Framing Tab -->
+            <div id="problem-framing" class="tab-content active">
+                <h2>Problem Framing</h2>
+                <p class="description">Frame your problem clearly to ensure you're solving the right issue.</p>
+                
+                <div class="framework-section">
+                    <h3>Problem Statement</h3>
+                    <textarea id="pf-problem" placeholder="Describe the problem you're facing..."></textarea>
+                </div>
+
+                <div class="framework-section">
+                    <h3>Who is affected?</h3>
+                    <textarea id="pf-who" placeholder="Which users, stakeholders, or teams are impacted?"></textarea>
+                </div>
+
+                <div class="framework-section">
+                    <h3>What is the impact?</h3>
+                    <textarea id="pf-impact" placeholder="Business metrics, user experience, technical debt, etc."></textarea>
+                </div>
+
+                <div class="framework-section">
+                    <h3>Why does this matter now?</h3>
+                    <textarea id="pf-why" placeholder="What makes this urgent or important at this time?"></textarea>
+                </div>
+
+                <div class="framework-section">
+                    <h3>What assumptions are you making?</h3>
+                    <textarea id="pf-assumptions" placeholder="List key assumptions that underpin this problem..."></textarea>
+                </div>
+
+                <div class="framework-section">
+                    <h3>Reframed Problem Statement</h3>
+                    <div id="pf-output" class="output-box">
+                        Your structured problem statement will appear here...
+                    </div>
+                </div>
+
+                <button class="action-button" onclick="generateProblemFraming()">Generate Framed Problem</button>
+            </div>
+
+            <!-- Root Cause Analysis Tab -->
+            <div id="root-cause" class="tab-content">
+                <h2>Root Cause Analysis</h2>
+                <p class="description">Dig deeper to understand the underlying causes of your problem.</p>
+                
+                <div class="framework-section">
+                    <h3>Observed Symptom</h3>
+                    <textarea id="rca-symptom" placeholder="What are you observing? (e.g., declining metrics, user complaints)"></textarea>
+                </div>
+
+                <div class="framework-section">
+                    <h3>5 Whys Analysis</h3>
+                    <div class="why-section">
+                        <label>Why #1:</label>
+                        <textarea id="rca-why1" placeholder="Why is this happening?"></textarea>
+                        
+                        <label>Why #2:</label>
+                        <textarea id="rca-why2" placeholder="Why does that happen?"></textarea>
+                        
+                        <label>Why #3:</label>
+                        <textarea id="rca-why3" placeholder="Why does that happen?"></textarea>
+                        
+                        <label>Why #4:</label>
+                        <textarea id="rca-why4" placeholder="Why does that happen?"></textarea>
+                        
+                        <label>Why #5:</label>
+                        <textarea id="rca-why5" placeholder="Why does that happen?"></textarea>
+                    </div>
+                </div>
+
+                <div class="framework-section">
+                    <h3>Contributing Factors</h3>
+                    <textarea id="rca-factors" placeholder="What other factors contribute to this issue? (technical, organizational, market)"></textarea>
+                </div>
+
+                <div class="framework-section">
+                    <h3>Root Cause Summary</h3>
+                    <div id="rca-output" class="output-box">
+                        Your root cause analysis will appear here...
+                    </div>
+                </div>
+
+                <button class="action-button" onclick="generateRootCause()">Analyze Root Causes</button>
+            </div>
+
+            <!-- Risk Management Tab -->
+            <div id="risk-management" class="tab-content">
+                <h2>Risk Management</h2>
+                <p class="description">Identify and evaluate risks associated with your decision.</p>
+                
+                <div class="framework-section">
+                    <h3>Decision Being Considered</h3>
+                    <textarea id="rm-decision" placeholder="What decision or approach are you considering?"></textarea>
+                </div>
+
+                <div class="framework-section">
+                    <h3>Potential Risks</h3>
+                    <div class="risk-categories">
+                        <div class="risk-category">
+                            <h4>Technical Risks</h4>
+                            <textarea id="rm-technical" placeholder="Scalability, technical debt, integration issues..."></textarea>
+                        </div>
+                        
+                        <div class="risk-category">
+                            <h4>Business Risks</h4>
+                            <textarea id="rm-business" placeholder="Market competition, revenue impact, customer churn..."></textarea>
+                        </div>
+                        
+                        <div class="risk-category">
+                            <h4>User Experience Risks</h4>
+                            <textarea id="rm-ux" placeholder="Adoption barriers, learning curve, accessibility..."></textarea>
+                        </div>
+                        
+                        <div class="risk-category">
+                            <h4>Organizational Risks</h4>
+                            <textarea id="rm-org" placeholder="Resource constraints, team capacity, stakeholder alignment..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="framework-section">
+                    <h3>Mitigation Strategies</h3>
+                    <textarea id="rm-mitigation" placeholder="How can you reduce or manage these risks?"></textarea>
+                </div>
+
+                <div class="framework-section">
+                    <h3>Risk Assessment</h3>
+                    <div id="rm-output" class="output-box">
+                        Your risk assessment will appear here...
+                    </div>
+                </div>
+
+                <button class="action-button" onclick="generateRiskAssessment()">Assess Risks</button>
+            </div>
+
+            <!-- Tradeoff Evaluation Tab -->
+            <div id="tradeoff-eval" class="tab-content">
+                <h2>Tradeoff Evaluation</h2>
+                <p class="description">Systematically compare options and understand their tradeoffs.</p>
+                
+                <div class="framework-section">
+                    <h3>Decision Context</h3>
+                    <textarea id="te-context" placeholder="What decision are you trying to make?"></textarea>
+                </div>
+
+                <div class="framework-section">
+                    <h3>Options Being Compared</h3>
+                    <div class="options-grid">
+                        <div class="option-card">
+                            <h4>Option A</h4>
+                            <input type="text" id="te-option-a-name" placeholder="Option name">
+                            <textarea id="te-option-a-desc" placeholder="Description"></textarea>
+                        </div>
+                        <div class="option-card">
+                            <h4>Option B</h4>
+                            <input type="text" id="te-option-b-name" placeholder="Option name">
+                            <textarea id="te-option-b-desc" placeholder="Description"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="framework-section">
+                    <h3>Evaluation Criteria</h3>
+                    <div class="criteria-grid">
+                        <div class="criterion">
+                            <label>Time to Implement:</label>
+                            <div class="comparison">
+                                <select id="te-time-a">
+                                    <option value="">-</option>
+                                    <option value="short">Short</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="long">Long</option>
+                                </select>
+                                <span>vs</span>
+                                <select id="te-time-b">
+                                    <option value="">-</option>
+                                    <option value="short">Short</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="long">Long</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="criterion">
+                            <label>Resource Requirements:</label>
+                            <div class="comparison">
+                                <select id="te-resources-a">
+                                    <option value="">-</option>
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                                <span>vs</span>
+                                <select id="te-resources-b">
+                                    <option value="">-</option>
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="criterion">
+                            <label>User Impact:</label>
+                            <div class="comparison">
+                                <select id="te-impact-a">
+                                    <option value="">-</option>
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                                <span>vs</span>
+                                <select id="te-impact-b">
+                                    <option value="">-</option>
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="criterion">
+                            <label>Technical Complexity:</label>
+                            <div class="comparison">
+                                <select id="te-complexity-a">
+                                    <option value="">-</option>
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                                <span>vs</span>
+                                <select id="te-complexity-b">
+                                    <option value="">-</option>
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="framework-section">
+                    <h3>Key Tradeoffs</h3>
+                    <textarea id="te-tradeoffs" placeholder="What are the key tradeoffs between these options?"></textarea>
+                </div>
+
+                <div class="framework-section">
+                    <h3>Tradeoff Analysis</h3>
+                    <div id="te-output" class="output-box">
+                        Your tradeoff analysis will appear here...
+                    </div>
+                </div>
+
+                <button class="action-button" onclick="generateTradeoffAnalysis()">Analyze Tradeoffs</button>
+            </div>
+
+            <!-- Next Steps Guidance Tab -->
+            <div id="next-steps" class="tab-content">
+                <h2>Responsible Next Steps Guidance</h2>
+                <p class="description">Plan your next steps with appropriate caution and validation.</p>
+                
+                <div class="framework-section">
+                    <h3>Current Situation</h3>
+                    <textarea id="ns-situation" placeholder="Summarize where you are now..."></textarea>
+                </div>
+
+                <div class="framework-section">
+                    <h3>Proposed Direction</h3>
+                    <textarea id="ns-direction" placeholder="What direction are you leaning toward?"></textarea>
+                </div>
+
+                <div class="framework-section">
+                    <h3>Confidence Level</h3>
+                    <select id="ns-confidence">
+                        <option value="">Select confidence level...</option>
+                        <option value="low">Low - Need much more information</option>
+                        <option value="medium-low">Medium-Low - Some significant unknowns</option>
+                        <option value="medium">Medium - Reasonable understanding</option>
+                        <option value="medium-high">Medium-High - Well understood</option>
+                        <option value="high">High - Very confident</option>
+                    </select>
+                </div>
+
+                <div class="framework-section">
+                    <h3>What Information is Missing?</h3>
+                    <textarea id="ns-gaps" placeholder="What key information do you still need?"></textarea>
+                </div>
+
+                <div class="framework-section">
+                    <h3>Validation Opportunities</h3>
+                    <textarea id="ns-validation" placeholder="How could you validate assumptions before full commitment? (user research, prototypes, data analysis, etc.)"></textarea>
+                </div>
+
+                <div class="framework-section">
+                    <h3>Stakeholders to Consult</h3>
+                    <textarea id="ns-stakeholders" placeholder="Who should you involve or inform?"></textarea>
+                </div>
+
+                <div class="framework-section">
+                    <h3>Recommended Next Steps</h3>
+                    <div id="ns-output" class="output-box">
+                        Your next steps guidance will appear here...
+                    </div>
+                </div>
+
+                <button class="action-button" onclick="generateNextSteps()">Generate Guidance</button>
+            </div>
+        </main>
+
+        <footer>
+            <p class="notice">
+                <strong>Note:</strong> Product Studio is a decision-support tool that helps you structure your thinking. 
+                It does NOT make decisions for you, predict outcomes, or provide automated recommendations. 
+                All judgments remain yours.
+            </p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
