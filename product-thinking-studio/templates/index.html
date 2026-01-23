@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Playground · AI-Powered PM Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --accent: #d946ef;
+            --background: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --text-light: #7f8c8d;
+            --border: #e1e8ed;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --error: #e74c3c;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: rgba(255,255,255,0.15);
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            color: var(--primary);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        textarea, input[type="number"] {
+            width: 100%;
+            padding: 0.875rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        textarea:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .kpi-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.15);
+            border-color: #c7d2fe;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+
+        .kpi-title {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+        }
+
+        .btn:hover {
+            background: #5558e3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: var(--success);
+        }
+
+        .btn-secondary:hover {
+            background: #229954;
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .alert-error {
+            background: #fadbd8;
+            color: #c0392b;
+            border-left: 4px solid var(--error);
+        }
+
+        .alert-success {
+            background: #d5f4e6;
+            color: #186a3b;
+            border-left: 4px solid var(--success);
+        }
+
+        .alert-warning {
+            background: #fcf3cf;
+            color: #7d6608;
+            border-left: 4px solid var(--warning);
+        }
+
+        .analysis-result {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+        }
+
+        .analysis-result h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .analysis-result h3 {
+            color: var(--secondary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .analysis-result ul, .analysis-result ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .analysis-result li {
+            margin-bottom: 0.5rem;
+        }
+
+        .analysis-result strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .footer p {
+            opacity: 0.9;
+            margin: 0.5rem 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+            }
+            
+            .tab {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Product Playground</h1>
+        <p>AI-Powered Product Strategy & Analytics Platform</p>
+        <div class="badges">
+            <span class="badge">💡 Strategic Analysis</span>
+            <span class="badge">📊 KPI Diagnostics</span>
+            <span class="badge">🚀 Data-Driven Insights</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('challenge')">💡 Product Challenge Analysis</button>
+            <button class="tab" onclick="switchTab('kpi')">📊 Dashboard KPI Diagnostics</button>
+        </div>
+
+        <!-- Product Challenge Tab -->
+        <div id="challenge-tab" class="tab-content active">
+            <div class="card">
+                <div class="form-group">
+                    <label for="challenge-input">💡 Describe Your Product Challenge</label>
+                    <textarea 
+                        id="challenge-input" 
+                        placeholder="Example: Our DAU dropped 15% after launching a new onboarding flow. Users are completing the first 2 steps but dropping off at step 3 (payment info). Our team is split between simplifying the form vs adding more social proof. What should we prioritize?"
+                    ></textarea>
+                </div>
+                <button class="btn" onclick="analyzeChallenge()">🚀 Analyze</button>
+            </div>
+            
+            <div id="challenge-alert" class="hidden"></div>
+            <div id="challenge-loading" class="hidden loading">
+                <div class="spinner"></div>
+                <p>🧠 Analyzing your product challenge with AI...</p>
+            </div>
+            <div id="challenge-result" class="hidden"></div>
+        </div>
+
+        <!-- KPI Dashboard Tab -->
+        <div id="kpi-tab" class="tab-content">
+            <div class="card">
+                <h3 style="margin-bottom: 1.5rem;">📊 Enter Your Dashboard Metrics</h3>
+                
+                <h4 style="margin-bottom: 1rem; color: var(--text);">Engagement Metrics</h4>
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Daily Active Users (DAU)</label>
+                        <input type="number" id="dau" min="0" value="0" step="1000">
+                    </div>
+                    <div class="form-group">
+                        <label>Monthly Active Users (MAU)</label>
+                        <input type="number" id="mau" min="0" value="0" step="1000">
+                    </div>
+                    <div class="form-group">
+                        <label>Avg Session Time (minutes)</label>
+                        <input type="number" id="session-time" min="0" value="0" step="0.5">
+                    </div>
+                </div>
+
+                <h4 style="margin-bottom: 1rem; color: var(--text);">Conversion & Retention</h4>
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Conversion Rate (%)</label>
+                        <input type="number" id="conversion" min="0" max="100" value="0" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>7-Day Retention Rate (%)</label>
+                        <input type="number" id="retention" min="0" max="100" value="0" step="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Churn Rate (%)</label>
+                        <input type="number" id="churn" min="0" max="100" value="0" step="0.1">
+                    </div>
+                </div>
+
+                <h4 style="margin-bottom: 1rem; color: var(--text);">User Satisfaction & Revenue</h4>
+                <div class="grid">
+                    <div class="form-group">
+                        <label>NPS Score</label>
+                        <input type="number" id="nps" min="-100" max="100" value="0" step="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Revenue Per User ($)</label>
+                        <input type="number" id="arpu" min="0" value="0" step="0.01">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Recent Changes (Optional)</label>
+                    <textarea id="recent-changes" placeholder="Example: Launched new UI redesign 6 weeks ago, added AI features last month, changed pricing model..."></textarea>
+                </div>
+
+                <div id="kpi-cards-container" class="hidden"></div>
+
+                <button class="btn" onclick="analyzeKPI()">🚀 Analyze Dashboard</button>
+            </div>
+
+            <div id="kpi-alert" class="hidden"></div>
+            <div id="kpi-loading" class="hidden loading">
+                <div class="spinner"></div>
+                <p>🧠 Analyzing your dashboard metrics with AI...</p>
+            </div>
+            <div id="kpi-result" class="hidden"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>💡 Pro Tips:</strong></p>
+        <p>• Be specific about metrics and context for better insights</p>
+        <p>• Include timeframes and recent changes</p>
+        <p>• Describe competing options and constraints</p>
+    </div>
+
+    <script>
+        let currentAnalysis = null;
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'challenge') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+                document.getElementById('challenge-tab').classList.add('active');
+            } else {
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+                document.getElementById('kpi-tab').classList.add('active');
+                updateKPICards();
+            }
+        }
+
+        function updateKPICards() {
+            const dau = parseFloat(document.getElementById('dau').value) || 0;
+            const mau = parseFloat(document.getElementById('mau').value) || 0;
+            const conversion = parseFloat(document.getElementById('conversion').value) || 0;
+            const retention = parseFloat(document.getElementById('retention').value) || 0;
+            const nps = parseFloat(document.getElementById('nps').value) || 0;
+
+            if (dau > 0 || mau > 0) {
+                const dauMauRatio = mau > 0 ? (dau / mau * 100).toFixed(1) : 0;
+                
+                const container = document.getElementById('kpi-cards-container');
+                container.className = 'kpi-cards';
+                container.innerHTML = `
+                    <div class="kpi-card">
+                        <div class="kpi-title">DAU/MAU Ratio</div>
+                        <div class="kpi-value">${dauMauRatio}%</div>
+                        <div class="kpi-title">Stickiness</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">Conversion Rate</div>
+                        <div class="kpi-value">${conversion.toFixed(1)}%</div>
+                        <div class="kpi-title">Trial to Paid</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">Retention (7-Day)</div>
+                        <div class="kpi-value">${retention.toFixed(0)}%</div>
+                        <div class="kpi-title">User Return Rate</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-title">NPS Score</div>
+                        <div class="kpi-value">${nps}</div>
+                        <div class="kpi-title">Satisfaction</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Update KPI cards when values change
+        ['dau', 'mau', 'conversion', 'retention', 'nps'].forEach(id => {
+            document.getElementById(id)?.addEventListener('input', updateKPICards);
+        });
+
+        async function analyzeChallenge() {
+            const input = document.getElementById('challenge-input').value.trim();
+            const alertDiv = document.getElementById('challenge-alert');
+            const loadingDiv = document.getElementById('challenge-loading');
+            const resultDiv = document.getElementById('challenge-result');
+
+            if (!input) {
+                showAlert(alertDiv, 'Please describe your product challenge', 'warning');
+                return;
+            }
+
+            alertDiv.className = 'hidden';
+            resultDiv.className = 'hidden';
+            loadingDiv.className = 'loading';
+
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ context: input })
+                });
+
+                const data = await response.json();
+                loadingDiv.className = 'hidden';
+
+                if (data.success) {
+                    currentAnalysis = {
+                        analysis: data.analysis,
+                        context: input,
+                        timestamp: data.timestamp
+                    };
+                    displayResult(resultDiv, data.analysis, input);
+                    showAlert(alertDiv, '✅ Analysis complete! Review the strategic insights below.', 'success');
+                } else {
+                    showAlert(alertDiv, data.error || 'Analysis failed', 'error');
+                }
+            } catch (error) {
+                loadingDiv.className = 'hidden';
+                showAlert(alertDiv, 'Error: ' + error.message, 'error');
+            }
+        }
+
+        async function analyzeKPI() {
+            const dau = parseFloat(document.getElementById('dau').value) || 0;
+            const mau = parseFloat(document.getElementById('mau').value) || 0;
+            
+            const alertDiv = document.getElementById('kpi-alert');
+            const loadingDiv = document.getElementById('kpi-loading');
+            const resultDiv = document.getElementById('kpi-result');
+
+            if (dau === 0 && mau === 0) {
+                showAlert(alertDiv, 'Please enter at least some KPI data', 'warning');
+                return;
+            }
+
+            const kpiData = {
+                dau: dau,
+                mau: mau,
+                avg_session_time: parseFloat(document.getElementById('session-time').value) || 0,
+                conversion_rate: parseFloat(document.getElementById('conversion').value) || 0,
+                churn_rate: parseFloat(document.getElementById('churn').value) || 0,
+                retention_rate: parseFloat(document.getElementById('retention').value) || 0,
+                nps_score: parseInt(document.getElementById('nps').value) || 0,
+                revenue_per_user: parseFloat(document.getElementById('arpu').value) || 0,
+                recent_changes: document.getElementById('recent-changes').value.trim()
+            };
+
+            alertDiv.className = 'hidden';
+            resultDiv.className = 'hidden';
+            loadingDiv.className = 'loading';
+
+            try {
+                const response = await fetch('/analyze-kpi', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(kpiData)
+                });
+
+                const data = await response.json();
+                loadingDiv.className = 'hidden';
+
+                if (data.success) {
+                    currentAnalysis = {
+                        analysis: data.analysis,
+                        context: JSON.stringify(data.kpi_data),
+                        timestamp: data.timestamp
+                    };
+                    displayResult(resultDiv, data.analysis, '');
+                    showAlert(alertDiv, '✅ KPI analysis complete! Review the diagnostic insights below.', 'success');
+                } else {
+                    showAlert(alertDiv, data.error || 'Analysis failed', 'error');
+                }
+            } catch (error) {
+                loadingDiv.className = 'hidden';
+                showAlert(alertDiv, 'Error: ' + error.message, 'error');
+            }
+        }
+
+        function showAlert(div, message, type) {
+            div.className = `alert alert-${type}`;
+            div.textContent = message;
+        }
+
+        function displayResult(div, analysis, context) {
+            // Convert markdown to HTML (basic conversion)
+            const html = analysis
+                .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+                .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/^- (.+)$/gm, '<li>$1</li>')
+                .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+                .replace(/\n\n/g, '<p></p>');
+
+            div.className = 'analysis-result';
+            div.innerHTML = `
+                <h2>🎯 Strategic Analysis</h2>
+                ${html}
+                <div style="margin-top: 2rem;">
+                    <button class="btn btn-secondary" onclick="downloadPDF()">📥 Download as PDF</button>
+                </div>
+            `;
+        }
+
+        async function downloadPDF() {
+            if (!currentAnalysis) return;
+
+            try {
+                const response = await fetch('/download-pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(currentAnalysis)
+                });
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `product_analysis_${currentAnalysis.timestamp}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } catch (error) {
+                alert('Error downloading PDF: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

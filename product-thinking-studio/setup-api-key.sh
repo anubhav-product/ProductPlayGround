@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# Quick API Key Setup Script
+
+echo "╔══════════════════════════════════════════════════════════════╗"
+echo "║                                                              ║"
+echo "║         🔑  OPENAI API KEY SETUP  🔑                         ║"
+echo "║                                                              ║"
+echo "╚══════════════════════════════════════════════════════════════╝"
+echo ""
+
+# Check if .env exists
+if [ ! -f ".env" ]; then
+    echo "📝 Creating .env file..."
+    cp .env.example .env
+fi
+
+echo "📋 Current .env configuration:"
+echo ""
+cat .env
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "🎯 NEXT STEPS:"
+echo ""
+echo "1️⃣  Get your OpenAI API key:"
+echo "   🌐 https://platform.openai.com/api-keys"
+echo ""
+echo "2️⃣  Edit the .env file:"
+echo "   $ nano .env"
+echo "   or"
+echo "   $ code .env"
+echo ""
+echo "3️⃣  Replace 'your-openai-api-key-here' with your actual key"
+echo "   Example: OPENAI_API_KEY=sk-proj-abc123..."
+echo ""
+echo "4️⃣  Choose your model (already optimized for best results):"
+echo "   ✅ gpt-4o (recommended) - Best quality"
+echo "   💰 gpt-4o-mini - Faster & cheaper"
+echo "   🧠 gpt-4-turbo - Maximum intelligence"
+echo ""
+echo "5️⃣  Run the application:"
+echo "   $ ./run.sh"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "💡 OPTIMIZATION TIPS:"
+echo ""
+echo "   The .env is pre-configured with OPTIMAL settings:"
+echo "   • Model: gpt-4o (best quality)"
+echo "   • Temperature: 0.7 (balanced creativity)"
+echo "   • Max Tokens: 4000 (comprehensive responses)"
+echo ""
+echo "   These settings give you the BEST AI insights! ✨"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "📖 For detailed setup guide:"
+echo "   $ cat docs/API-KEY-SETUP.md"
+echo ""
+echo "🚀 Ready to add your key? Open .env in your editor!"
+echo ""
