@@ -8,17 +8,6 @@ This module provides structured frameworks for product decision support:
 """
 
 from typing import Dict, List
-from dataclasses import dataclass
-
-
-@dataclass
-class RiskAssessment:
-    """Represents a risk with likelihood, impact, and mitigation."""
-    category: str
-    description: str
-    likelihood: str  # Low, Medium, High
-    impact: str  # Low, Medium, High
-    mitigation: str
 
 
 class DecisionSupportEngine:
@@ -44,19 +33,6 @@ class DecisionSupportEngine:
         "Legal / Compliance",
         "Business / Metrics"
     ]
-    
-    LIKELIHOOD_LEVELS = ["Low", "Medium", "High"]
-    IMPACT_LEVELS = ["Low", "Medium", "High"]
-    
-    @staticmethod
-    def get_rca_template() -> Dict[str, str]:
-        """Returns empty template for Root Cause Analysis."""
-        return {dim: "" for dim in DecisionSupportEngine.RCA_DIMENSIONS}
-    
-    @staticmethod
-    def get_risk_template() -> List[str]:
-        """Returns list of risk categories to analyze."""
-        return DecisionSupportEngine.RISK_CATEGORIES.copy()
     
     @staticmethod
     def generate_analysis_prompt(problem_statement: str) -> str:
