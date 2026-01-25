@@ -13,12 +13,15 @@ from prompt import ProductThinkingEngine
 import os
 from dotenv import load_dotenv
 from io import BytesIO
-from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import letter, A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
-from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.units import inch, cm
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak, Table, TableStyle, KeepTogether
+from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT, TA_JUSTIFY
+from reportlab.lib import colors
+from reportlab.pdfgen import canvas
 import markdown2
+import re
 from datetime import datetime
 import traceback
 
@@ -161,62 +164,372 @@ def analyze_website():
 
 @app.route('/download-pdf', methods=['POST'])
 def download_pdf():
-    """Generate and download PDF report"""
+    """Generate and download professional PDF report"""
     try:
         data = request.json
         analysis_text = data.get('analysis', '')
         context = data.get('context', '')
+        timestamp = datetime.now()
         
         buffer = BytesIO()
-        doc = SimpleDocTemplate(buffer, pagesize=letter,
-                              rightMargin=72, leftMargin=72,
-                              topMargin=72, bottomMargin=18)
+        
+        # Custom page template with header/footer
+        class NumberedCanvas(canvas.Canvas):
+            def __init__(self, *args, **kwargs):
+                canvas.Canvas.__init__(self, *args, **kwargs)
+                self._saved_page_states = []
+
+            def showPage(self):
+                self._saved_page_states.append(dict(self.__dict__))
+                self._startPage()
+
+            def save(self):
+                num_pages = len(self._saved_page_states)
+                for state in self._saved_page_states:
+                    self.__dict__.update(state)
+                    self.draw_page_decorations(num_pages)
+                    canvas.Canvas.showPage(self)
+                canvas.Canvas.save(self)
+
+            def draw_page_decorations(self, page_count):
+                self.saveState()
+                
+                # Header with gradient effect (simulated with lines)
+                self.setStrokeColor(colors.HexColor('#6366f1'))
+                self.setLineWidth(3)
+                self.line(0.75*inch, letter[1] - 0.5*inch, letter[0] - 0.75*inch, letter[1] - 0.5*inch)
+                
+                self.setStrokeColor(colors.HexColor('#8b5cf6'))
+                self.setLineWidth(2)
+                self.line(0.75*inch, letter[1] - 0.52*inch, letter[0] - 0.75*inch, letter[1] - 0.52*inch)
+                
+                # Header text
+                self.setFont('Helvetica-Bold', 10)
+                self.setFillColor(colors.HexColor('#2c3e50'))
+                self.drawString(0.75*inch, letter[1] - 0.35*inch, "Product Playground · Strategic Analysis Report")
+                
+                # Footer
+                self.setFont('Helvetica', 9)
+                self.setFillColor(colors.HexColor('#7f8c8d'))
+                footer_text = f"Generated on {timestamp.strftime('%B %d, %Y at %I:%M %p')}"
+                self.drawString(0.75*inch, 0.5*inch, footer_text)
+                
+                # Page number
+                page_num = f"Page {self._pageNumber} of {page_count}"
+                self.drawRightString(letter[0] - 0.75*inch, 0.5*inch, page_num)
+                
+                # Footer line
+                self.setStrokeColor(colors.HexColor('#e1e8ed'))
+                self.setLineWidth(1)
+                self.line(0.75*inch, 0.65*inch, letter[0] - 0.75*inch, 0.65*inch)
+                
+                self.restoreState()
+
+        doc = SimpleDocTemplate(
+            buffer, 
+            pagesize=letter,
+            rightMargin=0.75*inch, 
+            leftMargin=0.75*inch,
+            topMargin=1*inch, 
+            bottomMargin=0.85*inch,
+            title="Product Analysis Report",
+            author="Product Playground"
+        )
         
         elements = []
+        
+        # Define custom styles
         styles = getSampleStyleSheet()
         
-        # Title
-        title_style = ParagraphStyle(
-            'CustomTitle',
+        # Cover page title style
+        cover_title = ParagraphStyle(
+            'CoverTitle',
             parent=styles['Heading1'],
-            fontSize=24,
-            textColor='#2c3e50',
-            spaceAfter=30,
+            fontSize=36,
+            textColor=colors.HexColor('#6366f1'),
+            spaceAfter=20,
             alignment=TA_CENTER,
-            fontName='Helvetica-Bold'
+            fontName='Helvetica-Bold',
+            leading=42
         )
-        elements.append(Paragraph("Product Playground", title_style))
-        elements.append(Paragraph("Strategic Analysis Report", styles['Heading2']))
+        
+        # Subtitle style
+        cover_subtitle = ParagraphStyle(
+            'CoverSubtitle',
+            parent=styles['Normal'],
+            fontSize=16,
+            textColor=colors.HexColor('#7f8c8d'),
+            spaceAfter=40,
+            alignment=TA_CENTER,
+            fontName='Helvetica',
+            leading=20
+        )
+        
+        # Section header (H2)
+        section_header = ParagraphStyle(
+            'SectionHeader',
+            parent=styles['Heading2'],
+            fontSize=18,
+            textColor=colors.HexColor('#6366f1'),
+            spaceBefore=24,
+            spaceAfter=12,
+            fontName='Helvetica-Bold',
+            borderWidth=0,
+            borderColor=colors.HexColor('#6366f1'),
+            borderPadding=8,
+            backColor=colors.HexColor('#f8f9fa'),
+            leftIndent=10,
+            leading=22
+        )
+        
+        # Subsection header (H3)
+        subsection_header = ParagraphStyle(
+            'SubsectionHeader',
+            parent=styles['Heading3'],
+            fontSize=14,
+            textColor=colors.HexColor('#8b5cf6'),
+            spaceBefore=16,
+            spaceAfter=8,
+            fontName='Helvetica-Bold',
+            leftIndent=5,
+            leading=18
+        )
+        
+        # Body text style
+        body_style = ParagraphStyle(
+            'CustomBody',
+            parent=styles['BodyText'],
+            fontSize=11,
+            textColor=colors.HexColor('#2c3e50'),
+            spaceAfter=10,
+            alignment=TA_JUSTIFY,
+            fontName='Helvetica',
+            leading=16,
+            leftIndent=0,
+            rightIndent=0
+        )
+        
+        # Bullet point style
+        bullet_style = ParagraphStyle(
+            'BulletPoint',
+            parent=body_style,
+            fontSize=10,
+            leftIndent=20,
+            bulletIndent=10,
+            spaceAfter=6,
+            leading=14
+        )
+        
+        # Highlight box style
+        highlight_style = ParagraphStyle(
+            'Highlight',
+            parent=body_style,
+            fontSize=11,
+            backColor=colors.HexColor('#f0f4ff'),
+            borderWidth=1,
+            borderColor=colors.HexColor('#6366f1'),
+            borderPadding=10,
+            borderRadius=5,
+            leftIndent=10,
+            rightIndent=10,
+            spaceBefore=10,
+            spaceAfter=10
+        )
+        
+        # Warning/Risk style
+        warning_style = ParagraphStyle(
+            'Warning',
+            parent=body_style,
+            fontSize=10,
+            backColor=colors.HexColor('#fff4e6'),
+            borderWidth=1,
+            borderColor=colors.HexColor('#f39c12'),
+            borderPadding=10,
+            leftIndent=10,
+            rightIndent=10,
+            spaceBefore=8,
+            spaceAfter=8
+        )
+        
+        # === COVER PAGE ===
+        elements.append(Spacer(1, 2*inch))
+        elements.append(Paragraph("🚀 Product Playground", cover_title))
+        elements.append(Paragraph("AI-Powered Strategic Analysis Report", cover_subtitle))
+        
+        # Info box on cover
+        cover_info_data = [
+            ['Report Type:', 'Product & Market Analysis'],
+            ['Generated:', timestamp.strftime('%B %d, %Y')],
+            ['Time:', timestamp.strftime('%I:%M %p')],
+            ['Powered by:', 'GPT-4o Advanced Analysis']
+        ]
+        
+        cover_table = Table(cover_info_data, colWidths=[2*inch, 3.5*inch])
+        cover_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8f9fa')),
+            ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor('#6366f1')),
+            ('TEXTCOLOR', (1, 0), (1, -1), colors.HexColor('#2c3e50')),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 11),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 12),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 12),
+            ('TOPPADDING', (0, 0), (-1, -1), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
+            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#e1e8ed')),
+        ]))
+        
+        elements.append(cover_table)
+        elements.append(Spacer(1, 1*inch))
+        
+        # Context box if provided
+        if context:
+            elements.append(Paragraph("📋 Analysis Context", subsection_header))
+            elements.append(Paragraph(context, highlight_style))
+        
+        elements.append(PageBreak())
+        
+        # === ANALYSIS CONTENT ===
+        # Parse the markdown analysis
+        lines = analysis_text.split('\n')
+        
+        for line in lines:
+            line = line.strip()
+            if not line:
+                elements.append(Spacer(1, 0.1*inch))
+                continue
+            
+            # Handle headers
+            if line.startswith('## '):
+                # H2 - Major section
+                title = line.replace('## ', '').strip()
+                # Add emoji if not present
+                if not any(char in title for char in '🎯📊💡🔍⚠️🚀📈✅'):
+                    title = '▸ ' + title
+                elements.append(Spacer(1, 0.15*inch))
+                elements.append(Paragraph(title, section_header))
+                
+            elif line.startswith('### '):
+                # H3 - Subsection
+                title = line.replace('### ', '').strip()
+                elements.append(Paragraph(title, subsection_header))
+                
+            elif line.startswith('**') and line.endswith('**'):
+                # Bold standalone lines (labels)
+                text = line.replace('**', '')
+                label_style = ParagraphStyle(
+                    'Label',
+                    parent=body_style,
+                    fontSize=11,
+                    textColor=colors.HexColor('#6366f1'),
+                    fontName='Helvetica-Bold',
+                    spaceBefore=8,
+                    spaceAfter=4
+                )
+                elements.append(Paragraph(text, label_style))
+                
+            elif line.startswith('- ') or line.startswith('* '):
+                # Bullet points
+                text = line[2:].strip()
+                # Convert markdown bold
+                text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', text)
+                elements.append(Paragraph(f'• {text}', bullet_style))
+                
+            elif line.startswith(('1. ', '2. ', '3. ', '4. ', '5. ', '6. ', '7. ', '8. ', '9. ')):
+                # Numbered lists
+                text = re.sub(r'^\d+\.\s+', '', line)
+                text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', text)
+                number = line.split('.')[0]
+                elements.append(Paragraph(f'{number}. {text}', bullet_style))
+                
+            elif '**' in line:
+                # Inline bold text - convert to HTML
+                text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', line)
+                
+                # Check if this is a risk/warning line
+                if any(word in text.lower() for word in ['risk', 'warning', 'concern', 'threat', 'danger']):
+                    elements.append(Paragraph(text, warning_style))
+                # Check if this is a key insight
+                elif any(word in line for word in ['Confidence:', 'Overall', 'Key:', 'Critical:']):
+                    elements.append(Paragraph(text, highlight_style))
+                else:
+                    elements.append(Paragraph(text, body_style))
+                    
+            else:
+                # Regular paragraph
+                text = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', line)
+                elements.append(Paragraph(text, body_style))
+        
+        # === FOOTER PAGE ===
+        elements.append(PageBreak())
+        elements.append(Spacer(1, 2*inch))
+        
+        footer_title = ParagraphStyle(
+            'FooterTitle',
+            parent=cover_title,
+            fontSize=24,
+            textColor=colors.HexColor('#6366f1'),
+            alignment=TA_CENTER
+        )
+        
+        elements.append(Paragraph("Thank you for using Product Playground", footer_title))
         elements.append(Spacer(1, 0.3*inch))
         
-        # Context if provided
-        if context:
-            elements.append(Paragraph("Product Challenge:", styles['Heading3']))
-            elements.append(Paragraph(context, styles['BodyText']))
-            elements.append(Spacer(1, 0.2*inch))
+        footer_text = ParagraphStyle(
+            'FooterText',
+            parent=body_style,
+            fontSize=11,
+            alignment=TA_CENTER,
+            textColor=colors.HexColor('#7f8c8d')
+        )
         
-        # Analysis
-        elements.append(Paragraph("Analysis:", styles['Heading3']))
-        html_content = markdown2.markdown(analysis_text)
+        elements.append(Paragraph(
+            "This analysis was generated using advanced AI to provide strategic product insights.<br/>"
+            "For best results, combine these insights with your domain expertise and market knowledge.",
+            footer_text
+        ))
         
-        for paragraph in html_content.split('\n'):
-            if paragraph.strip():
-                try:
-                    elements.append(Paragraph(paragraph, styles['BodyText']))
-                    elements.append(Spacer(1, 0.1*inch))
-                except:
-                    pass
+        elements.append(Spacer(1, 1*inch))
         
-        doc.build(elements)
+        # Contact/info table
+        footer_info = [
+            ['🌐 Product Playground', 'AI-Powered PM Intelligence'],
+            ['💡 Features', 'Challenge Analysis • KPI Diagnostics • Product Teardown'],
+            ['🚀 Powered by', 'OpenAI GPT-4o'],
+        ]
+        
+        footer_table = Table(footer_info, colWidths=[2.5*inch, 3.5*inch])
+        footer_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8f9fa')),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#2c3e50')),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 12),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e1e8ed')),
+        ]))
+        
+        elements.append(footer_table)
+        
+        # Build PDF with custom canvas
+        doc.build(elements, canvasmaker=NumberedCanvas)
         buffer.seek(0)
         
         return send_file(
             buffer,
             as_attachment=True,
-            download_name=f'product_analysis_{datetime.now().strftime("%Y%m%d_%H%M%S")}.pdf',
+            download_name=f'ProductAnalysis_{timestamp.strftime("%Y%m%d_%H%M%S")}.pdf',
             mimetype='application/pdf'
         )
     except Exception as e:
+        print(f"Error generating PDF: {str(e)}")
+        print(traceback.format_exc())
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
