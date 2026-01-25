@@ -363,7 +363,8 @@
         <div class="badges">
             <span class="badge">💡 Strategic Analysis</span>
             <span class="badge">📊 KPI Diagnostics</span>
-            <span class="badge">🚀 Data-Driven Insights</span>
+            <span class="badge">� Product Teardown</span>
+            <span class="badge">🚀 AI-Powered Insights</span>
         </div>
     </div>
 
@@ -371,6 +372,7 @@
         <div class="tabs">
             <button class="tab active" onclick="switchTab('challenge')">💡 Product Challenge Analysis</button>
             <button class="tab" onclick="switchTab('kpi')">📊 Dashboard KPI Diagnostics</button>
+            <button class="tab" onclick="switchTab('teardown')">🔍 Product Teardown</button>
         </div>
 
         <!-- Product Challenge Tab -->
@@ -460,13 +462,44 @@
             </div>
             <div id="kpi-result" class="hidden"></div>
         </div>
+
+        <!-- Product Teardown Tab -->
+        <div id="teardown-tab" class="tab-content">
+            <div class="card">
+                <div class="form-group">
+                    <label for="website-url">🔍 Website URL to Analyze</label>
+                    <input 
+                        type="text" 
+                        id="website-url" 
+                        placeholder="https://example.com" 
+                        style="padding: 0.875rem; border: 2px solid var(--border); border-radius: 8px; font-size: 1rem; width: 100%; font-family: 'Inter', sans-serif;"
+                    >
+                </div>
+                <div class="form-group">
+                    <label for="teardown-context">📝 Additional Context (Optional)</label>
+                    <textarea 
+                        id="teardown-context" 
+                        placeholder="Any additional information about the product, recent news, or specific areas you'd like analyzed..."
+                        style="min-height: 100px;"
+                    ></textarea>
+                </div>
+                <button class="btn" onclick="analyzeTeardown()">🚀 Analyze Product</button>
+            </div>
+            
+            <div id="teardown-alert" class="hidden"></div>
+            <div id="teardown-loading" class="hidden loading">
+                <div class="spinner"></div>
+                <p>🧠 Conducting product & market teardown analysis...</p>
+            </div>
+            <div id="teardown-result" class="hidden"></div>
+        </div>
     </div>
 
     <div class="footer">
         <p><strong>💡 Pro Tips:</strong></p>
-        <p>• Be specific about metrics and context for better insights</p>
-        <p>• Include timeframes and recent changes</p>
-        <p>• Describe competing options and constraints</p>
+        <p>• Challenge Analysis: Be specific about metrics and context for better insights</p>
+        <p>• KPI Diagnostics: Include timeframes and recent changes for deeper analysis</p>
+        <p>• Product Teardown: Provide competitor or industry context for richer insights</p>
     </div>
 
     <script>
@@ -479,10 +512,13 @@
             if (tab === 'challenge') {
                 document.querySelector('.tab:nth-child(1)').classList.add('active');
                 document.getElementById('challenge-tab').classList.add('active');
-            } else {
+            } else if (tab === 'kpi') {
                 document.querySelector('.tab:nth-child(2)').classList.add('active');
                 document.getElementById('kpi-tab').classList.add('active');
                 updateKPICards();
+            } else if (tab === 'teardown') {
+                document.querySelector('.tab:nth-child(3)').classList.add('active');
+                document.getElementById('teardown-tab').classList.add('active');
             }
         }
 
@@ -649,6 +685,52 @@
                     <button class="btn btn-secondary" onclick="downloadPDF()">📥 Download as PDF</button>
                 </div>
             `;
+        }
+
+        async function analyzeTeardown() {
+            const websiteUrl = document.getElementById('website-url').value.trim();
+            const additionalContext = document.getElementById('teardown-context').value.trim();
+            const alertDiv = document.getElementById('teardown-alert');
+            const loadingDiv = document.getElementById('teardown-loading');
+            const resultDiv = document.getElementById('teardown-result');
+
+            if (!websiteUrl) {
+                showAlert(alertDiv, 'Please enter a website URL to analyze', 'warning');
+                return;
+            }
+
+            alertDiv.className = 'hidden';
+            resultDiv.className = 'hidden';
+            loadingDiv.className = 'loading';
+
+            try {
+                const response = await fetch('/analyze-website', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        website_url: websiteUrl,
+                        additional_context: additionalContext
+                    })
+                });
+
+                const data = await response.json();
+                loadingDiv.className = 'hidden';
+
+                if (data.success) {
+                    currentAnalysis = {
+                        analysis: data.analysis,
+                        context: `Product Teardown: ${data.website_url}`,
+                        timestamp: data.timestamp
+                    };
+                    displayResult(resultDiv, data.analysis, data.website_url);
+                    showAlert(alertDiv, '✅ Product teardown complete! Review the strategic insights below.', 'success');
+                } else {
+                    showAlert(alertDiv, data.error || 'Analysis failed', 'error');
+                }
+            } catch (error) {
+                loadingDiv.className = 'hidden';
+                showAlert(alertDiv, 'Error: ' + error.message, 'error');
+            }
         }
 
         async function downloadPDF() {

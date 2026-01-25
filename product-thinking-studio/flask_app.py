@@ -123,6 +123,42 @@ def analyze_kpi():
         print(traceback.format_exc())
         return jsonify({'error': str(e), 'type': type(e).__name__}), 500
 
+@app.route('/analyze-website', methods=['POST'])
+def analyze_website():
+    """Handle product/market teardown analysis"""
+    try:
+        data = request.json
+        if not data:
+            return jsonify({'error': 'No JSON data provided'}), 400
+            
+        website_url = data.get('website_url', '').strip()
+        additional_context = data.get('additional_context', '').strip()
+        
+        if not website_url:
+            return jsonify({'error': 'Please provide a website URL'}), 400
+        
+        # Basic URL validation
+        if not website_url.startswith(('http://', 'https://')):
+            website_url = 'https://' + website_url
+        
+        # Check if API key is configured
+        if not os.getenv('OPENAI_API_KEY'):
+            return jsonify({'error': 'OpenAI API key not configured. Please set OPENAI_API_KEY environment variable.'}), 500
+        
+        engine = ProductThinkingEngine()
+        response = engine.analyze_website(website_url, additional_context)
+        
+        return jsonify({
+            'success': True,
+            'analysis': response,
+            'website_url': website_url,
+            'timestamp': datetime.now().strftime("%Y%m%d_%H%M%S")
+        })
+    except Exception as e:
+        print(f"Error in /analyze-website: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({'error': str(e), 'type': type(e).__name__}), 500
+
 @app.route('/download-pdf', methods=['POST'])
 def download_pdf():
     """Generate and download PDF report"""

@@ -15,7 +15,8 @@ Product Playground is an intelligent decision-support platform designed for prod
 
 - **🎯 Product Challenge Analysis**: Get comprehensive strategic recommendations for complex product decisions
 - **📊 Dashboard KPI Diagnostics**: Analyze product metrics, identify issues, and receive actionable improvement strategies
-- **📥 PDF Export**: Generate professional analysis reports for stakeholder distribution
+- **� Product Teardown**: Conduct structured product and market analysis based on any website URL
+- **�📥 PDF Export**: Generate professional analysis reports for stakeholder distribution
 - **🎨 Professional Interface**: Clean, sophisticated design optimized for executive audiences
 - **⚡ Real-time Analysis**: Instant AI-powered insights using GPT-4o
 
@@ -26,18 +27,21 @@ Product Playground is an intelligent decision-support platform designed for prod
 - Analyze A/B test results and next steps
 - Navigate technical debt vs. new features trade-offs
 - Assess competitive positioning strategies
+- Conduct competitive product analysis and teardowns
 
 ### For Product Leaders
 - Review team's strategic proposals with AI-augmented perspective
 - Identify red flags in product metrics
 - Benchmark KPIs against industry standards
 - Prepare data-driven presentations for executives
+- Analyze competitor products and market positioning
 
 ### For Startups
 - Make informed product decisions with limited resources
 - Validate product-market fit hypotheses
 - Optimize growth metrics efficiently
 - Prepare investor-ready product analyses
+- Research competitor products and market opportunities
 
 ## Technology Stack
 

@@ -409,3 +409,222 @@ You help PMs navigate complex decisions with clarity, avoiding false certainty w
                 themes.append(theme)
         
         return themes if themes else ["General Product Strategy"]
+    
+    def analyze_website(self, website_url: str, additional_context: str = "") -> str:
+        """
+        Analyze a website and provide product/market teardown insights
+        
+        Args:
+            website_url: The URL of the website to analyze
+            additional_context: Optional additional context about the product
+            
+        Returns:
+            Comprehensive product teardown analysis
+        """
+        prompt = self.build_website_teardown_prompt(website_url, additional_context)
+        
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": """You are a Senior Product Manager with 15+ years of experience conducting product and market analysis for top tech companies, venture capital firms, and product consultancies.
+
+Your expertise includes:
+- Product strategy and positioning analysis
+- Market sizing and opportunity assessment
+- Competitive intelligence and category analysis
+- Customer segment identification and Jobs-to-be-Done framework
+- Business model and monetization strategy evaluation
+- Product-market fit assessment
+- Strategic risk identification
+- Investment due diligence
+
+Your analytical approach:
+- Infer insights from publicly visible signals only
+- Explicitly state uncertainty when information is missing
+- Focus on strategic implications, not tactical execution
+- Identify second-order effects and systemic risks
+- Ask high-quality PM questions that probe assumptions
+- Avoid design critique, SEO advice, or feature recommendations
+- Write with calm precision and professional judgment
+
+You produce insights that senior PMs, product leaders, and investors would respect."""
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            temperature=self.temperature,
+            max_tokens=self.max_tokens,
+            presence_penalty=0.1,
+            frequency_penalty=0.1
+        )
+        
+        return response.choices[0].message.content
+    
+    def build_website_teardown_prompt(self, website_url: str, additional_context: str) -> str:
+        """
+        Build the prompt for website teardown analysis
+        
+        Args:
+            website_url: URL of the website to analyze
+            additional_context: Optional context about the product
+            
+        Returns:
+            Formatted prompt string
+        """
+        context_section = f"\n\n**Additional Context:**\n{additional_context}" if additional_context else ""
+        
+        return f"""You are conducting a structured product and market teardown based on the following website:
+
+**Website URL:** {website_url}{context_section}
+
+---
+
+Provide a comprehensive PM-grade analysis following this EXACT structure:
+
+## Product Overview & Intent
+- What does this product appear to do?
+- What core problem is it solving?
+- Is the problem framed as urgent, strategic, or operational?
+- Is the product positioned as a tool, platform, or capability?
+- Explain your reasoning based on visible signals
+
+## Target Customer Segments
+**Primary Customer:**
+- Customer type (individual, SMB, mid-market, enterprise)
+- Buyer vs end-user (if different)
+- Level of sophistication assumed
+- Confidence level: [Low/Medium/High]
+
+**Secondary/Adjacent Segments:**
+- Additional potential segments
+- Who this product is NOT for and why that matters
+
+## Customer Jobs & Pain Points
+**Jobs-to-be-Done:**
+- Functional jobs
+- Emotional jobs
+- Social jobs (if applicable)
+
+**Key Pains Being Relieved:**
+- Explicit pains (stated)
+- Implicit pains (inferred)
+- What customers likely care about most (speed, trust, cost, scale, insight)
+
+**Potential Misalignments:**
+- Where customer expectations may not match reality
+
+## Market & Category Analysis
+- What market/category does this belong to?
+- Creating new category vs competing in existing?
+- Category maturity (emerging, growing, mature, declining)
+- Competitive density (crowded vs specialized)
+- Differentiation clarity (explicit, implicit, or unclear)
+- Confidence level: [Low/Medium/High]
+
+## Value Proposition Assessment
+**Strength Analysis:**
+- Primary value emphasized
+- Secondary values implied
+- Value framing (outcomes vs features)
+- Proof/credibility signals present
+- Gaps or vague areas in value proposition
+
+**Evidence-Based Assessment:**
+- What makes the value proposition strong
+- Where it may be weak or unclear
+
+## Business & Monetization Signals
+**Inferred Business Model:**
+- Likely pricing model (subscription, usage-based, enterprise, freemium)
+- Revenue drivers
+- Sales motion (self-serve vs sales-led)
+- Buying friction and decision complexity
+- Confidence level: [Low/Medium/High]
+
+**Strategic Implications:**
+- What the business model reveals about strategy
+- Potential monetization challenges
+
+## Scalability & Growth Potential
+**Scalability Assessment:**
+- Customer growth potential (TAM signals)
+- Product complexity at scale
+- Operational burden considerations
+- Trust, compliance, or reliability constraints
+
+**Growth Dynamics:**
+- What scales well
+- What may bottleneck growth
+- Network effects or virality potential
+
+## Product & Strategic Risks
+For each risk category, assess:
+
+**Market Risk:**
+- Wrong segment targeting
+- Weak demand signals
+- Category timing issues
+- Second-order effects
+
+**Product Risk:**
+- Unclear value proposition
+- Over-scoped or under-scoped
+- Feature-function mismatch
+- Second-order effects
+
+**Trust & Adoption Risk:**
+- Credibility barriers
+- Switching costs
+- Learning curve
+- Second-order effects
+
+**Differentiation Risk:**
+- Weak positioning
+- Commoditization threats
+- Defensibility concerns
+- Second-order effects
+
+**Execution & Scaling Risk:**
+- Delivery complexity
+- Resource requirements
+- Operational challenges
+- Second-order effects
+
+## Opportunity Areas for PM Focus
+Identify high-leverage areas for PM attention:
+- Strategic questions that matter more than features
+- Where focus would likely have highest impact
+- What should NOT be expanded too early
+- Critical assumptions to validate first
+
+No feature lists - focus on strategic direction.
+
+## Key PM Questions to Investigate
+Generate 8-10 thoughtful questions such as:
+- "What assumption, if wrong, would break this strategy?"
+- "What signal would validate product-market fit in 60 days?"
+- "What tradeoff will become painful at scale?"
+- "What would success look like in 6-12 months?"
+- "If we're wrong about [X], what breaks first?"
+- "What user behavior would disconfirm our assumptions?"
+- "Where are we most likely overconfident?"
+- "What should we NOT do, even if we could?"
+
+---
+
+**Critical Guidelines:**
+- Base insights ONLY on publicly visible signals from the website
+- Explicitly state uncertainty and confidence levels
+- Avoid generic advice - be specific and evidence-based
+- No design critique, SEO advice, or UI/UX suggestions
+- No feature recommendations - focus on strategic reasoning
+- No scoring or ranking systems
+- Write with calm, professional precision
+- Acknowledge what you DON'T know
+
+Provide senior PM-grade insights suitable for strategic decision-making.
+"""

@@ -6,7 +6,8 @@ A professional, AI-powered playground for Product Managers to structure their th
 
 - **🎯 Structured Decision Framework**: Navigate complex product decisions with a proven framework
 - **🧠 AI-Powered Analysis**: Leverage GPT-4 for deep strategic insights
-- **💎 Beautiful UI/UX**: Professional interface with smooth animations and modern design
+- **� Product Teardown**: Conduct comprehensive product and market analysis from website URLs
+- **�💎 Beautiful UI/UX**: Professional interface with smooth animations and modern design
 - **⚡ Real-time Insights**: Get instant, actionable recommendations
 - **📊 Multi-Dimensional Analysis**: Evaluate risks, options, and outcomes comprehensively
 
