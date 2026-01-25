@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Playground · AI-Powered PM Intelligence</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <title>Product Playground · Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -14,16 +14,20 @@
 
         :root {
             --primary: #6366f1;
+            --primary-dark: #4f46e5;
             --secondary: #8b5cf6;
             --accent: #d946ef;
-            --background: #f8f9fa;
-            --card-bg: #ffffff;
-            --text: #2c3e50;
-            --text-light: #7f8c8d;
-            --border: #e1e8ed;
-            --success: #27ae60;
-            --warning: #f39c12;
-            --error: #e74c3c;
+            --cyan: #06b6d4;
+            --background: #0a0a0f;
+            --surface: #1a1a24;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text: #ffffff;
+            --text-muted: #a1a1aa;
+            --border: rgba(255, 255, 255, 0.1);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --glow-primary: rgba(99, 102, 241, 0.4);
         }
 
         body {
@@ -31,139 +35,305 @@
             background: var(--background);
             color: var(--text);
             line-height: 1.6;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.1) 0px, transparent 50%);
         }
 
+        /* Header */
         .header {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
-            color: white;
-            padding: 3rem 2rem;
+            padding: 2rem;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-bottom: 1px solid var(--border);
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
         }
 
         .header h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
-            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 0.95rem;
         }
 
-        .badges {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .badge {
-            background: rgba(255,255,255,0.15);
-            padding: 0.5rem 1.2rem;
-            border-radius: 50px;
-            font-size: 0.85rem;
+        .back-btn {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.9rem;
             font-weight: 500;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
+        .back-btn:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--primary);
+            transform: translateX(-4px);
+        }
+
+        /* Container */
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
         }
 
-        .tabs {
-            display: flex;
-            gap: 1rem;
+        /* Glass Card */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2.5rem;
             margin-bottom: 2rem;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .tab {
-            padding: 1rem 2rem;
-            background: none;
-            border: none;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-light);
             transition: all 0.3s ease;
         }
 
-        .tab:hover {
-            color: var(--primary);
+        .glass-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
-        .tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
+        /* Section Headers */
+        .section-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
-        .tab-content {
-            display: none;
+        .subsection-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .tab-content.active {
-            display: block;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            margin-bottom: 2rem;
-            border: 1px solid var(--border);
-        }
-
+        /* Form Elements */
         .form-group {
             margin-bottom: 1.5rem;
         }
 
         label {
             display: block;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
             color: var(--text);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        textarea, input[type="number"] {
+        input[type="text"],
+        input[type="number"],
+        textarea {
             width: 100%;
-            padding: 0.875rem;
-            border: 2px solid var(--border);
-            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             font-family: 'Inter', sans-serif;
-            font-size: 1rem;
+            font-size: 0.95rem;
+            color: var(--text);
             transition: all 0.3s ease;
-            background: white;
         }
 
-        textarea:focus, input[type="number"]:focus {
+        input:focus,
+        textarea:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         textarea {
-            min-height: 150px;
+            min-height: 120px;
             resize: vertical;
         }
 
-        .grid {
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Grid Layout */
+        .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
             margin-bottom: 1.5rem;
         }
 
+        /* Buttons */
+        .btn {
+            padding: 1.25rem 2.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--success), #16a34a);
+            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            box-shadow: 0 12px 32px rgba(34, 197, 94, 0.4);
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1.25rem 1.5rem;
+            border-radius: 14px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 3rem 2rem;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Analysis Result */
+        .analysis-result {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-top: 2rem;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .analysis-result h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .analysis-result h3 {
+            color: var(--secondary);
+            margin: 2rem 0 1rem;
+            font-size: 1.3rem;
+        }
+
+        .analysis-result p {
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .analysis-result ul,
+        .analysis-result ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-muted);
+        }
+
+        .analysis-result li {
+            margin-bottom: 0.75rem;
+            line-height: 1.7;
+        }
+
+        .analysis-result strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* KPI Cards */
         .kpi-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -172,353 +342,306 @@
         }
 
         .kpi-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
             padding: 1.5rem;
-            border-radius: 10px;
+            border-radius: 16px;
             text-align: center;
-            border: 2px solid var(--border);
+            border: 1px solid rgba(99, 102, 241, 0.2);
             transition: all 0.3s ease;
         }
 
         .kpi-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.15);
-            border-color: #c7d2fe;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.4);
         }
 
         .kpi-value {
             font-size: 2rem;
             font-weight: 700;
-            color: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin: 0.5rem 0;
         }
 
         .kpi-title {
             font-size: 0.8rem;
-            color: var(--text-light);
+            color: var(--text-muted);
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .btn {
-            padding: 1rem 2.5rem;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
-        }
-
-        .btn:hover {
-            background: #5558e3;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn:disabled {
-            background: var(--text-light);
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-secondary {
-            background: var(--success);
-        }
-
-        .btn-secondary:hover {
-            background: #229954;
-        }
-
-        .alert {
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            font-weight: 500;
-        }
-
-        .alert-error {
-            background: #fadbd8;
-            color: #c0392b;
-            border-left: 4px solid var(--error);
-        }
-
-        .alert-success {
-            background: #d5f4e6;
-            color: #186a3b;
-            border-left: 4px solid var(--success);
-        }
-
-        .alert-warning {
-            background: #fcf3cf;
-            color: #7d6608;
-            border-left: 4px solid var(--warning);
-        }
-
-        .analysis-result {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 2rem;
-            margin-top: 2rem;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-            border: 1px solid var(--border);
-        }
-
-        .analysis-result h2 {
-            color: var(--primary);
-            margin-bottom: 1.5rem;
-            font-family: 'Playfair Display', serif;
-        }
-
-        .analysis-result h3 {
-            color: var(--secondary);
-            margin-top: 1.5rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .analysis-result ul, .analysis-result ol {
-            margin-left: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .analysis-result li {
-            margin-bottom: 0.5rem;
-        }
-
-        .analysis-result strong {
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 3rem;
-        }
-
-        .spinner {
-            border: 4px solid var(--border);
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .footer {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            color: white;
-            padding: 2rem;
-            text-align: center;
-            margin-top: 4rem;
-        }
-
-        .footer p {
-            opacity: 0.9;
-            margin: 0.5rem 0;
-        }
-
+        /* Utility Classes */
         .hidden {
             display: none;
         }
 
+        .text-center {
+            text-align: center;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
             .header h1 {
-                font-size: 1.8rem;
+                font-size: 1.5rem;
             }
             
             .container {
                 padding: 1rem;
             }
             
-            .tabs {
-                overflow-x: auto;
+            .glass-card {
+                padding: 1.5rem;
             }
-            
-            .tab {
-                padding: 0.75rem 1rem;
-                font-size: 0.9rem;
+
+            .back-btn {
+                position: static;
+                margin-bottom: 1rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
+    <a href="/" class="back-btn">
+        <span>←</span>
+        <span>Back to Home</span>
+    </a>
+
     <div class="header">
-        <h1>Product Playground</h1>
-        <p>AI-Powered Product Strategy & Analytics Platform</p>
-        <div class="badges">
-            <span class="badge">💡 Strategic Analysis</span>
-            <span class="badge">📊 KPI Diagnostics</span>
-            <span class="badge">� Product Teardown</span>
-            <span class="badge">🚀 AI-Powered Insights</span>
-        </div>
+        <h1 id="page-title">Product Playground</h1>
+        <p id="page-subtitle">AI-Powered Strategic Analysis</p>
     </div>
 
     <div class="container">
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('challenge')">💡 Product Challenge Analysis</button>
-            <button class="tab" onclick="switchTab('kpi')">📊 Dashboard KPI Diagnostics</button>
-            <button class="tab" onclick="switchTab('teardown')">🔍 Product Teardown</button>
-        </div>
-
-        <!-- Product Challenge Tab -->
-        <div id="challenge-tab" class="tab-content active">
-            <div class="card">
+        <!-- Product Challenge Analysis -->
+        <div id="challenge-tab" class="tab-content hidden">
+            <div class="glass-card">
+                <h2 class="section-header">
+                    <span>💡</span>
+                    <span>Describe Your Product Challenge</span>
+                </h2>
                 <div class="form-group">
-                    <label for="challenge-input">💡 Describe Your Product Challenge</label>
                     <textarea 
                         id="challenge-input" 
-                        placeholder="Example: Our DAU dropped 15% after launching a new onboarding flow. Users are completing the first 2 steps but dropping off at step 3 (payment info). Our team is split between simplifying the form vs adding more social proof. What should we prioritize?"
+                        placeholder="Example: Our DAU dropped 15% after launching a new onboarding flow. Users complete the first 2 steps but drop off at step 3 (payment info). Our team is split between simplifying the form vs adding more social proof. What should we prioritize?"
                     ></textarea>
                 </div>
-                <button class="btn" onclick="analyzeChallenge()">🚀 Analyze</button>
+                <button class="btn" onclick="analyzeChallenge()">
+                    <span>🚀</span>
+                    <span>Analyze Challenge</span>
+                </button>
             </div>
             
             <div id="challenge-alert" class="hidden"></div>
             <div id="challenge-loading" class="hidden loading">
                 <div class="spinner"></div>
-                <p>🧠 Analyzing your product challenge with AI...</p>
+                <p style="color: var(--text-muted);">🧠 Analyzing your product challenge with AI...</p>
             </div>
             <div id="challenge-result" class="hidden"></div>
         </div>
 
         <!-- KPI Dashboard Tab -->
-        <div id="kpi-tab" class="tab-content">
-            <div class="card">
-                <h3 style="margin-bottom: 1.5rem;">📊 Enter Your Dashboard Metrics</h3>
+        <div id="kpi-tab" class="tab-content hidden">
+            <div class="glass-card">
+                <h2 class="section-header">
+                    <span>📊</span>
+                    <span>Enter Your Dashboard Metrics</span>
+                </h2>
                 
-                <h4 style="margin-bottom: 1rem; color: var(--text);">Engagement Metrics</h4>
-                <div class="grid">
+                <h3 class="subsection-header">
+                    <span>📈</span>
+                    <span>Engagement Metrics</span>
+                </h3>
+                <div class="metrics-grid">
                     <div class="form-group">
                         <label>Daily Active Users (DAU)</label>
-                        <input type="number" id="dau" min="0" value="0" step="1000">
+                        <input type="number" id="dau" min="0" value="0" step="1000" placeholder="e.g., 12400">
                     </div>
                     <div class="form-group">
                         <label>Monthly Active Users (MAU)</label>
-                        <input type="number" id="mau" min="0" value="0" step="1000">
+                        <input type="number" id="mau" min="0" value="0" step="1000" placeholder="e.g., 34800">
                     </div>
                     <div class="form-group">
                         <label>Avg Session Time (minutes)</label>
-                        <input type="number" id="session-time" min="0" value="0" step="0.5">
+                        <input type="number" id="session-time" min="0" value="0" step="0.5" placeholder="e.g., 8.5">
                     </div>
                 </div>
 
-                <h4 style="margin-bottom: 1rem; color: var(--text);">Conversion & Retention</h4>
-                <div class="grid">
+                <h3 class="subsection-header">
+                    <span>🔄</span>
+                    <span>Conversion & Retention</span>
+                </h3>
+                <div class="metrics-grid">
                     <div class="form-group">
                         <label>Conversion Rate (%)</label>
-                        <input type="number" id="conversion" min="0" max="100" value="0" step="0.1">
+                        <input type="number" id="conversion" min="0" max="100" value="0" step="0.1" placeholder="e.g., 3.2">
                     </div>
                     <div class="form-group">
                         <label>7-Day Retention Rate (%)</label>
-                        <input type="number" id="retention" min="0" max="100" value="0" step="1">
+                        <input type="number" id="retention" min="0" max="100" value="0" step="1" placeholder="e.g., 38">
                     </div>
                     <div class="form-group">
                         <label>Churn Rate (%)</label>
-                        <input type="number" id="churn" min="0" max="100" value="0" step="0.1">
+                        <input type="number" id="churn" min="0" max="100" value="0" step="0.1" placeholder="e.g., 6.8">
                     </div>
                 </div>
 
-                <h4 style="margin-bottom: 1rem; color: var(--text);">User Satisfaction & Revenue</h4>
-                <div class="grid">
+                <h3 class="subsection-header">
+                    <span>⭐</span>
+                    <span>User Satisfaction & Revenue</span>
+                </h3>
+                <div class="metrics-grid">
                     <div class="form-group">
                         <label>NPS Score</label>
-                        <input type="number" id="nps" min="-100" max="100" value="0" step="1">
+                        <input type="number" id="nps" min="-100" max="100" value="0" step="1" placeholder="e.g., 42">
                     </div>
                     <div class="form-group">
                         <label>Revenue Per User ($)</label>
-                        <input type="number" id="arpu" min="0" value="0" step="0.01">
+                        <input type="number" id="arpu" min="0" value="0" step="0.01" placeholder="e.g., 47.00">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Recent Changes (Optional)</label>
-                    <textarea id="recent-changes" placeholder="Example: Launched new UI redesign 6 weeks ago, added AI features last month, changed pricing model..."></textarea>
+                    <label>📝 Recent Changes (Optional)</label>
+                    <textarea id="recent-changes" placeholder="Example: Launched new onboarding flow 8 weeks ago. Added mobile app 3 months ago. Increased pricing from $39 to $49 per month 5 months ago..."></textarea>
                 </div>
 
                 <div id="kpi-cards-container" class="hidden"></div>
 
-                <button class="btn" onclick="analyzeKPI()">🚀 Analyze Dashboard</button>
+                <button class="btn" onclick="analyzeKPI()">
+                    <span>🚀</span>
+                    <span>Analyze Dashboard</span>
+                </button>
             </div>
 
             <div id="kpi-alert" class="hidden"></div>
             <div id="kpi-loading" class="hidden loading">
                 <div class="spinner"></div>
-                <p>🧠 Analyzing your dashboard metrics with AI...</p>
+                <p style="color: var(--text-muted);">🧠 Analyzing your dashboard metrics with AI...</p>
             </div>
             <div id="kpi-result" class="hidden"></div>
         </div>
 
         <!-- Product Teardown Tab -->
-        <div id="teardown-tab" class="tab-content">
-            <div class="card">
+        <div id="teardown-tab" class="tab-content hidden">
+            <div class="glass-card">
+                <h2 class="section-header">
+                    <span>🔍</span>
+                    <span>Product & Market Teardown</span>
+                </h2>
                 <div class="form-group">
-                    <label for="website-url">🔍 Website URL to Analyze</label>
+                    <label>🌐 Website URL to Analyze</label>
                     <input 
                         type="text" 
                         id="website-url" 
-                        placeholder="https://example.com" 
-                        style="padding: 0.875rem; border: 2px solid var(--border); border-radius: 8px; font-size: 1rem; width: 100%; font-family: 'Inter', sans-serif;"
+                        placeholder="https://example.com"
                     >
                 </div>
                 <div class="form-group">
-                    <label for="teardown-context">📝 Additional Context (Optional)</label>
+                    <label>📝 Additional Context (Optional)</label>
                     <textarea 
                         id="teardown-context" 
                         placeholder="Any additional information about the product, recent news, or specific areas you'd like analyzed..."
-                        style="min-height: 100px;"
                     ></textarea>
                 </div>
-                <button class="btn" onclick="analyzeTeardown()">🚀 Analyze Product</button>
+                <button class="btn" onclick="analyzeTeardown()">
+                    <span>🚀</span>
+                    <span>Analyze Product</span>
+                </button>
             </div>
             
             <div id="teardown-alert" class="hidden"></div>
             <div id="teardown-loading" class="hidden loading">
                 <div class="spinner"></div>
-                <p>🧠 Conducting product & market teardown analysis...</p>
+                <p style="color: var(--text-muted);">🧠 Conducting product & market teardown analysis...</p>
             </div>
             <div id="teardown-result" class="hidden"></div>
         </div>
     </div>
 
-    <div class="footer">
-        <p><strong>💡 Pro Tips:</strong></p>
-        <p>• Challenge Analysis: Be specific about metrics and context for better insights</p>
-        <p>• KPI Diagnostics: Include timeframes and recent changes for deeper analysis</p>
-        <p>• Product Teardown: Provide competitor or industry context for richer insights</p>
-    </div>
-
     <script>
         let currentAnalysis = null;
 
-        function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        // Get tab from URL parameter
+        function getTabFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('tab') || 'challenge';
+        }
+
+        // Show the appropriate tab on page load
+        function initializePage() {
+            const tab = getTabFromURL();
+            showTab(tab);
+        }
+
+        function showTab(tab) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
             
-            if (tab === 'challenge') {
-                document.querySelector('.tab:nth-child(1)').classList.add('active');
-                document.getElementById('challenge-tab').classList.add('active');
-            } else if (tab === 'kpi') {
-                document.querySelector('.tab:nth-child(2)').classList.add('active');
-                document.getElementById('kpi-tab').classList.add('active');
-                updateKPICards();
-            } else if (tab === 'teardown') {
-                document.querySelector('.tab:nth-child(3)').classList.add('active');
-                document.getElementById('teardown-tab').classList.add('active');
+            // Show selected tab
+            const tabElement = document.getElementById(`${tab}-tab`);
+            if (tabElement) {
+                tabElement.classList.remove('hidden');
+                
+                // Update page title based on tab
+                const titles = {
+                    'challenge': {
+                        title: '💡 Product Challenge Analysis',
+                        subtitle: 'Navigate complex product decisions with AI-powered insights'
+                    },
+                    'kpi': {
+                        title: '📊 Dashboard KPI Diagnostics',
+                        subtitle: 'Deep dive into your product metrics and uncover insights'
+                    },
+                    'teardown': {
+                        title: '🔍 Product Teardown',
+                        subtitle: 'Comprehensive product & market analysis from any website'
+                    }
+                };
+                
+                if (titles[tab]) {
+                    document.getElementById('page-title').textContent = titles[tab].title;
+                    document.getElementById('page-subtitle').textContent = titles[tab].subtitle;
+                }
             }
         }
 
@@ -571,13 +694,13 @@
             const resultDiv = document.getElementById('challenge-result');
 
             if (!input) {
-                showAlert(alertDiv, 'Please describe your product challenge', 'warning');
+                showAlert(alertDiv, '⚠️ Please describe your product challenge', 'warning');
                 return;
             }
 
             alertDiv.className = 'hidden';
             resultDiv.className = 'hidden';
-            loadingDiv.className = 'loading';
+            loadingDiv.classList.remove('hidden');
 
             try {
                 const response = await fetch('/analyze', {
@@ -587,7 +710,7 @@
                 });
 
                 const data = await response.json();
-                loadingDiv.className = 'hidden';
+                loadingDiv.classList.add('hidden');
 
                 if (data.success) {
                     currentAnalysis = {
@@ -598,11 +721,11 @@
                     displayResult(resultDiv, data.analysis, input);
                     showAlert(alertDiv, '✅ Analysis complete! Review the strategic insights below.', 'success');
                 } else {
-                    showAlert(alertDiv, data.error || 'Analysis failed', 'error');
+                    showAlert(alertDiv, `❌ ${data.error || 'Analysis failed'}`, 'error');
                 }
             } catch (error) {
-                loadingDiv.className = 'hidden';
-                showAlert(alertDiv, 'Error: ' + error.message, 'error');
+                loadingDiv.classList.add('hidden');
+                showAlert(alertDiv, `❌ Error: ${error.message}`, 'error');
             }
         }
 
@@ -615,7 +738,7 @@
             const resultDiv = document.getElementById('kpi-result');
 
             if (dau === 0 && mau === 0) {
-                showAlert(alertDiv, 'Please enter at least some KPI data', 'warning');
+                showAlert(alertDiv, '⚠️ Please enter at least some KPI data', 'warning');
                 return;
             }
 
@@ -633,7 +756,7 @@
 
             alertDiv.className = 'hidden';
             resultDiv.className = 'hidden';
-            loadingDiv.className = 'loading';
+            loadingDiv.classList.remove('hidden');
 
             try {
                 const response = await fetch('/analyze-kpi', {
@@ -643,7 +766,7 @@
                 });
 
                 const data = await response.json();
-                loadingDiv.className = 'hidden';
+                loadingDiv.classList.add('hidden');
 
                 if (data.success) {
                     currentAnalysis = {
@@ -654,11 +777,57 @@
                     displayResult(resultDiv, data.analysis, '');
                     showAlert(alertDiv, '✅ KPI analysis complete! Review the diagnostic insights below.', 'success');
                 } else {
-                    showAlert(alertDiv, data.error || 'Analysis failed', 'error');
+                    showAlert(alertDiv, `❌ ${data.error || 'Analysis failed'}`, 'error');
                 }
             } catch (error) {
-                loadingDiv.className = 'hidden';
-                showAlert(alertDiv, 'Error: ' + error.message, 'error');
+                loadingDiv.classList.add('hidden');
+                showAlert(alertDiv, `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function analyzeTeardown() {
+            const websiteUrl = document.getElementById('website-url').value.trim();
+            const additionalContext = document.getElementById('teardown-context').value.trim();
+            const alertDiv = document.getElementById('teardown-alert');
+            const loadingDiv = document.getElementById('teardown-loading');
+            const resultDiv = document.getElementById('teardown-result');
+
+            if (!websiteUrl) {
+                showAlert(alertDiv, '⚠️ Please enter a website URL to analyze', 'warning');
+                return;
+            }
+
+            alertDiv.className = 'hidden';
+            resultDiv.className = 'hidden';
+            loadingDiv.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/analyze-website', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        website_url: websiteUrl,
+                        additional_context: additionalContext
+                    })
+                });
+
+                const data = await response.json();
+                loadingDiv.classList.add('hidden');
+
+                if (data.success) {
+                    currentAnalysis = {
+                        analysis: data.analysis,
+                        context: `Product Teardown: ${data.website_url}`,
+                        timestamp: data.timestamp
+                    };
+                    displayResult(resultDiv, data.analysis, data.website_url);
+                    showAlert(alertDiv, '✅ Product teardown complete! Review the strategic insights below.', 'success');
+                } else {
+                    showAlert(alertDiv, `❌ ${data.error || 'Analysis failed'}`, 'error');
+                }
+            } catch (error) {
+                loadingDiv.classList.add('hidden');
+                showAlert(alertDiv, `❌ Error: ${error.message}`, 'error');
             }
         }
 
@@ -681,56 +850,13 @@
             div.innerHTML = `
                 <h2>🎯 Strategic Analysis</h2>
                 ${html}
-                <div style="margin-top: 2rem;">
-                    <button class="btn btn-secondary" onclick="downloadPDF()">📥 Download as PDF</button>
+                <div style="margin-top: 2.5rem; text-align: center;">
+                    <button class="btn btn-secondary" onclick="downloadPDF()">
+                        <span>📥</span>
+                        <span>Download as PDF</span>
+                    </button>
                 </div>
             `;
-        }
-
-        async function analyzeTeardown() {
-            const websiteUrl = document.getElementById('website-url').value.trim();
-            const additionalContext = document.getElementById('teardown-context').value.trim();
-            const alertDiv = document.getElementById('teardown-alert');
-            const loadingDiv = document.getElementById('teardown-loading');
-            const resultDiv = document.getElementById('teardown-result');
-
-            if (!websiteUrl) {
-                showAlert(alertDiv, 'Please enter a website URL to analyze', 'warning');
-                return;
-            }
-
-            alertDiv.className = 'hidden';
-            resultDiv.className = 'hidden';
-            loadingDiv.className = 'loading';
-
-            try {
-                const response = await fetch('/analyze-website', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        website_url: websiteUrl,
-                        additional_context: additionalContext
-                    })
-                });
-
-                const data = await response.json();
-                loadingDiv.className = 'hidden';
-
-                if (data.success) {
-                    currentAnalysis = {
-                        analysis: data.analysis,
-                        context: `Product Teardown: ${data.website_url}`,
-                        timestamp: data.timestamp
-                    };
-                    displayResult(resultDiv, data.analysis, data.website_url);
-                    showAlert(alertDiv, '✅ Product teardown complete! Review the strategic insights below.', 'success');
-                } else {
-                    showAlert(alertDiv, data.error || 'Analysis failed', 'error');
-                }
-            } catch (error) {
-                loadingDiv.className = 'hidden';
-                showAlert(alertDiv, 'Error: ' + error.message, 'error');
-            }
         }
 
         async function downloadPDF() {
@@ -747,7 +873,7 @@
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `product_analysis_${currentAnalysis.timestamp}.pdf`;
+                a.download = `ProductAnalysis_${currentAnalysis.timestamp}.pdf`;
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
@@ -756,6 +882,9 @@
                 alert('Error downloading PDF: ' + error.message);
             }
         }
+
+        // Initialize page on load
+        initializePage();
     </script>
 </body>
 </html>

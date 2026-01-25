@@ -52,7 +52,12 @@ def method_not_allowed(e):
 
 @app.route('/')
 def index():
-    """Render main page"""
+    """Render landing page"""
+    return render_template('landing.html')
+
+@app.route('/app')
+def app_page():
+    """Render main application page"""
     return render_template('index.html')
 
 @app.route('/analyze', methods=['POST'])
