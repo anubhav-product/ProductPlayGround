@@ -7,16 +7,20 @@ A professional, AI-powered playground for Product Managers to structure their th
 - **🎯 Structured Decision Framework**: Navigate complex product decisions with a proven framework
 - **🧠 AI-Powered Analysis**: Leverage GPT-4 for deep strategic insights
 - **� Product Teardown**: Conduct comprehensive product and market analysis from website URLs
-- **�💎 Beautiful UI/UX**: Professional interface with smooth animations and modern design
+- **📊 KPI Diagnostics**: Deep dive into dashboard metrics and uncover actionable insights
+
+- **💎 Beautiful UI/UX**: Modern glassmorphism design with dark theme
 - **⚡ Real-time Insights**: Get instant, actionable recommendations
-- **📊 Multi-Dimensional Analysis**: Evaluate risks, options, and outcomes comprehensively
+- **📥 PDF Export**: Download professional, color-coded analysis reports
+- **📱 Mobile Responsive**: Works beautifully on all screen sizes
 
 ## 🎨 Design Philosophy
 
-- **Professional Fonts**: Inter for body text, Poppins for headings
+- **Modern Glassmorphism**: Dark theme with glass-morphic cards and backdrop blur effects
+- **Professional Fonts**: Inter for body text, Playfair Display for headings
 - **Smooth Animations**: Thoughtful micro-interactions and transitions
-- **Modern Aesthetics**: Gradient accents, card-based layouts, and clean spacing
-- **Responsive Design**: Works beautifully on all screen sizes
+- **Gradient Accents**: Beautiful color transitions and hover effects
+- **Responsive Design**: Optimized for desktop, tablet, and mobile
 - **Accessibility First**: High contrast, clear hierarchy, and intuitive navigation
 
 ## 🚀 Quick Start
@@ -39,14 +43,23 @@ A professional, AI-powered playground for Product Managers to structure their th
    ```
 
 3. **Set up environment variables**
+   
+   Copy the example file:
    ```bash
-   export OPENAI_API_KEY='your-api-key-here'
+   cp .env.example .env
+   ```
+   
+   Edit `.env` and add your OpenAI API key:
+   ```bash
+   OPENAI_API_KEY=your-api-key-here
    ```
 
 4. **Run the application**
    ```bash
-   streamlit run app/app.py
+   python flask_app.py
    ```
+   
+   Open http://127.0.0.1:5000 in your browser
 
 5. **Open in browser**
    ```
