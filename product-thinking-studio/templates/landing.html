@@ -137,7 +137,7 @@
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2rem;
             margin-bottom: 4rem;
         }
@@ -214,6 +214,11 @@
         .feature-card:nth-child(3) .feature-icon {
             background: linear-gradient(135deg, rgba(217, 70, 239, 0.2), rgba(139, 92, 246, 0.2));
             box-shadow: 0 8px 32px rgba(217, 70, 239, 0.3);
+        }
+
+        .feature-card:nth-child(4) .feature-icon {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(6, 182, 212, 0.2));
+            box-shadow: 0 8px 32px rgba(34, 197, 94, 0.3);
         }
 
         .feature-card h3 {
@@ -366,7 +371,10 @@
 
     <!-- Features Section -->
     <div class="features-container">
-        <h2 class="section-title">Choose Your Analysis Type</h2>
+        <h2 class="section-title">Product Thinking Toolkit</h2>
+        <p style="text-align: center; color: var(--text-muted); margin-bottom: 1rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+            Comprehensive AI-powered tools for product analysis, strategic decisions, and continuous learning
+        </p>
         
         <div class="features-grid">
             <!-- Product Challenge Analysis -->
@@ -388,7 +396,7 @@
 
             <!-- Dashboard KPI Diagnostics -->
             <div class="feature-card" onclick="window.location.href='/app?tab=kpi'">
-                <div class="feature-icon">📊</div>
+                <div class="feature-icon">📈</div>
                 <h3>Dashboard KPI Diagnostics</h3>
                 <p>Deep dive into your product metrics and uncover hidden insights</p>
                 <ul class="feature-highlights">
@@ -416,6 +424,108 @@
                 </ul>
                 <button class="feature-btn">
                     <span>Teardown Product</span>
+                    <span>→</span>
+                </button>
+            </div>
+
+            <!-- Decision Framing Engine -->
+            <div class="feature-card" onclick="window.location.href='/app?tab=framing'">
+                <div class="feature-icon">🎯</div>
+                <h3>Decision Framing Engine</h3>
+                <p>Clarify what decision is actually being made before analysis begins</p>
+                <ul class="feature-highlights">
+                    <li>Clear decision statement</li>
+                    <li>Options & constraints</li>
+                    <li>Success signals & unknowns</li>
+                    <li>Stakeholder mapping</li>
+                </ul>
+                <button class="feature-btn">
+                    <span>Frame Decision</span>
+                    <span>→</span>
+                </button>
+            </div>
+
+            <!-- Decision Dashboard -->
+            <div class="feature-card" onclick="window.location.href='/app?tab=dashboard'">
+                <div class="feature-icon">📊</div>
+                <h3>Decision Dashboard</h3>
+                <p>Understand where things appear to be going wrong and why it matters</p>
+                <ul class="feature-highlights">
+                    <li>Plain-language signal explanation</li>
+                    <li>Multiple competing hypotheses</li>
+                    <li>Supporting data context</li>
+                    <li>Risk & uncertainty mapping</li>
+                </ul>
+                <button class="feature-btn">
+                    <span>View Dashboard</span>
+                    <span>→</span>
+                </button>
+            </div>
+
+            <!-- Decision Confidence Meter -->
+            <div class="feature-card" onclick="window.location.href='/app?tab=confidence'">
+                <div class="feature-icon">⚡</div>
+                <h3>Confidence Meter</h3>
+                <p>Assess whether there is enough signal to act with confidence</p>
+                <ul class="feature-highlights">
+                    <li>Qualitative signal strength</li>
+                    <li>What's missing from analysis</li>
+                    <li>What would increase confidence</li>
+                    <li>No scores or percentages</li>
+                </ul>
+                <button class="feature-btn">
+                    <span>Check Confidence</span>
+                    <span>→</span>
+                </button>
+            </div>
+
+            <!-- Decision Defense Pack -->
+            <div class="feature-card" onclick="window.location.href='/app?tab=defense'">
+                <div class="feature-icon">🛡️</div>
+                <h3>Decision Defense Pack</h3>
+                <p>Clearly communicate and defend decisions to stakeholders</p>
+                <ul class="feature-highlights">
+                    <li>Executive-friendly brief</li>
+                    <li>Tradeoffs evaluated</li>
+                    <li>Risks acknowledged</li>
+                    <li>Email-ready format</li>
+                </ul>
+                <button class="feature-btn">
+                    <span>Create Brief</span>
+                    <span>→</span>
+                </button>
+            </div>
+
+            <!-- Decision Retrospective -->
+            <div class="feature-card" onclick="window.location.href='/app?tab=retrospective'">
+                <div class="feature-icon">🔄</div>
+                <h3>Decision Retrospective</h3>
+                <p>Capture learning after decisions to improve future judgment</p>
+                <ul class="feature-highlights">
+                    <li>What actually happened</li>
+                    <li>Assumptions tested</li>
+                    <li>What broke vs held true</li>
+                    <li>Learning, not blame</li>
+                </ul>
+                <button class="feature-btn">
+                    <span>Start Retrospective</span>
+                    <span>→</span>
+                </button>
+            </div>
+
+            <!-- Walkthrough Mode -->
+            <div class="feature-card" onclick="window.location.href='/app?tab=walkthrough'">
+                <div class="feature-icon">🧭</div>
+                <h3>Guided Walkthrough</h3>
+                <p>5-step framework for structured product thinking and analysis</p>
+                <ul class="feature-highlights">
+                    <li>Step-by-step guidance</li>
+                    <li>Problem framing & hypotheses</li>
+                    <li>AI builds on YOUR thinking</li>
+                    <li>Tradeoffs & risk assessment</li>
+                </ul>
+                <button class="feature-btn">
+                    <span>Start Walkthrough</span>
                     <span>→</span>
                 </button>
             </div>

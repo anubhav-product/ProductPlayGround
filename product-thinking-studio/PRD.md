@@ -1,6 +1,6 @@
 # Product Requirements Document (PRD)
 
-**Product Playground - AI-Powered Product Strategy Platform**
+**Product Playground - AI-Powered Decision Support System**
 
 ---
 
@@ -9,9 +9,9 @@
 | **Field** | **Details** |
 |-----------|-------------|
 | **Product Name** | Product Playground |
-| **Version** | 1.0 |
+| **Version** | 2.0 - Decision Support System |
 | **Status** | Live / In Production |
-| **Last Updated** | January 23, 2026 |
+| **Last Updated** | January 28, 2026 |
 | **Document Owner** | Product Team |
 | **Stakeholders** | Product Managers, Product Leaders, Engineering |
 
@@ -19,15 +19,28 @@
 
 ## Executive Summary
 
-Product Playground is an AI-powered decision support platform designed to augment product managers' strategic thinking capabilities. By leveraging GPT-4o's advanced reasoning, the platform provides comprehensive analysis for product decisions and diagnostic insights for product metrics.
+Product Playground is an AI-powered decision support platform that helps product managers frame, analyze, defend, assess confidence in, and learn from product decisions—without replacing human judgment.
+
+### Evolution: V1 → V2
+
+**V1 (Original):** 3 core analysis tools
+- Product Challenge Analysis
+- Dashboard KPI Diagnostics  
+- Product Teardown
+
+**V2 (Current):** Complete Decision Support System
+- **Added 5 new features:** Decision Framing, Decision Dashboard, Confidence Meter, Defense Pack, Retrospective
+- **Added 1 guided experience:** Walkthrough Mode
+- **Enhanced:** PDF export for all 9 features
+- **Total:** 9 comprehensive product thinking tools
 
 ### Vision
 
-To become the go-to AI copilot for product managers worldwide, democratizing access to strategic product thinking and enabling better, faster product decisions.
+To become the go-to AI copilot for product managers worldwide, democratizing access to strategic product thinking and enabling better, faster decisions through a cohesive decision support framework.
 
 ### Mission
 
-Empower product teams to make data-informed decisions by providing instant, high-quality strategic analysis that would traditionally require expensive consultants or extensive team discussions.
+Empower product teams to make better decisions by providing structured frameworks that support human judgment—from initial framing through post-decision learning—rather than replacing critical thinking with algorithmic recommendations.
 
 ---
 
@@ -68,10 +81,198 @@ Empower product teams to make data-informed decisions by providing instant, high
 ### Core Problems
 
 1. **Decision Paralysis**: Product managers face complex decisions with unclear trade-offs
-2. **Limited Perspective**: Teams lack diverse viewpoints for strategic validation
-3. **Time Constraints**: Deep analysis is time-intensive; deadlines are tight
-4. **Inconsistent Frameworks**: Ad-hoc decision-making leads to suboptimal outcomes
-5. **Metrics Blind Spots**: Dashboard anomalies go unnoticed or misinterpreted
+2. **Poor Decision Framing**: Teams jump to analysis before clarifying what's actually being decided
+3. **Premature Conclusions**: Single hypothesis bias instead of considering competing explanations
+4. **False Confidence**: Acting on weak signals or waiting when signal is strong enough
+5. **Limited Perspective**: Teams lack diverse viewpoints for strategic validation
+6. **Time Constraints**: Deep analysis is time-intensive; deadlines are tight
+7. **Inconsistent Frameworks**: Ad-hoc decision-making leads to suboptimal outcomes
+8. **No Learning Loop**: Past decisions aren't reviewed to improve future judgment
+9. **Metrics Blind Spots**: Dashboard anomalies go unnoticed or misinterpreted
+10. **Stakeholder Communication**: Difficulty defending decisions to executives
+
+---
+
+## Product Architecture: Decision Support System
+
+### Core Philosophy
+
+**Decision support, not decision replacement**
+- AI illuminates possibilities, doesn't claim certainty
+- Supports human judgment rather than replacing it
+- Avoids predictions, rankings, and definitive statements
+- Uses qualitative assessments, not false precision
+- Builds on user's thinking, doesn't dictate answers
+
+### Feature Ecosystem (9 Tools)
+
+#### **Group 1: Core Analysis (Original 3)**
+1. **Product Challenge Analysis** - Comprehensive strategic recommendations
+2. **Dashboard KPI Diagnostics** - 8-metric health assessment
+3. **Product Teardown** - Competitive product & market analysis
+
+#### **Group 2: Decision Support System (New 5)**
+4. **Decision Framing Engine** - Clarify what's being decided
+5. **Decision Dashboard** - Form competing hypotheses from signals
+6. **Confidence Meter** - Assess signal strength qualitatively
+7. **Decision Defense Pack** - Executive communication briefs
+8. **Decision Retrospective** - Post-decision learning capture
+
+#### **Group 3: Guided Experience (1)**
+9. **Walkthrough Mode** - 5-step structured product thinking
+
+### Decision Flow
+
+```
+Frame Decision (Framing Engine)
+        ↓
+Analyze Signals (Decision Dashboard)
+        ↓
+Assess Confidence (Confidence Meter)
+        ↓
+Make Decision (Human Judgment)
+        ↓
+Defend Decision (Defense Pack)
+        ↓
+Learn from Outcome (Retrospective)
+```
+
+---
+
+## Feature Specifications
+
+### Feature 4: Decision Framing Engine 🎯
+
+**Purpose:** Clarify what decision is actually being made before diving into analysis
+
+**User Flow:**
+1. User enters decision statement
+2. Lists stakeholders, options, constraints
+3. Defines success signals and unknowns
+4. AI clarifies and refines the frame
+5. Export framed decision as PDF
+
+**AI Output Includes:**
+- Clarified decision statement
+- What decision is really about
+- Stakeholder landscape map
+- Real vs assumed options
+- Hard vs soft constraints
+- Success definition
+- Critical unknowns ranked
+- What could make decision irrelevant
+
+**Key Principle:** Clarity before analysis
+
+### Feature 5: Decision Dashboard 📊
+
+**Purpose:** Understand signals, form competing hypotheses, avoid premature conclusions
+
+**User Flow:**
+1. Describe what appears wrong
+2. Add supporting data (optional)
+3. Provide timeline/context
+4. AI generates 3-5 competing hypotheses
+5. Export analysis as PDF
+
+**AI Output Includes:**
+- Plain-language signal summary
+- 3-5 competing hypotheses with:
+  * What each would explain
+  * What each wouldn't explain
+  * Supporting/contradicting evidence
+  * How to test each
+- What data shows vs infers
+- Warning signs vs noise
+- Risks of acting too quickly
+- What to watch next
+
+**Key Principle:** Hypotheses over conclusions
+
+### Feature 6: Confidence Meter ⚡
+
+**Purpose:** Qualitatively assess whether there's enough signal to act
+
+**User Flow:**
+1. State decision being considered
+2. List evidence supporting decision
+3. Note gaps/uncertainties
+4. Optionally add timeline
+5. AI assesses signal strength
+6. Export assessment as PDF
+
+**AI Output Includes:**
+- Signal strength: Strong/Emerging/Weak (NO percentages)
+- Evidence quality review
+- What's missing that matters
+- What would increase confidence
+- Confidence vs timeline tradeoff
+- Final judgment framing
+
+**Key Principle:** Qualitative over quantitative
+
+### Feature 7: Decision Defense Pack 🛡️
+
+**Purpose:** Create executive-friendly briefs to communicate decisions
+
+**User Flow:**
+1. State decision made
+2. Explain rationale
+3. List tradeoffs considered
+4. Note known risks
+5. Specify target audience
+6. AI generates defense brief
+7. Export as PDF (email-ready)
+
+**AI Output Includes:**
+- 3-4 sentence executive summary
+- Clear decision statement
+- Rationale with business impact
+- Tradeoffs table
+- Risks & mitigation plans
+- Success metrics & timeline
+- Objection responses
+- Q&A talking points
+
+**Key Principle:** Clear, honest communication
+
+### Feature 8: Decision Retrospective 🔄
+
+**Purpose:** Capture learnings after decisions to improve judgment
+
+**User Flow:**
+1. State original decision
+2. What was expected
+3. What actually happened
+4. Which assumptions held/broke
+5. What would you do differently
+6. AI analyzes and extracts patterns
+7. Export learnings as PDF
+
+**AI Output Includes:**
+- Outcome summary (expected vs actual)
+- What went right and why
+- What didn't go as planned
+- Assumptions testing results
+- Key learnings (process, estimates, market)
+- Concrete guidance for next time
+- Pattern recognition
+- "If you could do it over" insights
+
+**Key Principle:** Learning, not blame
+
+### Feature 9: Guided Walkthrough 🧭
+
+**Purpose:** 5-step structured framework for product thinking
+
+**Steps:**
+1. Target user & decision
+2. Constraints & context
+3. AI analysis
+4. Tradeoffs & risks
+5. Next steps
+
+**Output:** Complete analysis with PDF export
 
 ---
 

@@ -9,39 +9,55 @@
 
 ## Overview
 
-Product Playground is an intelligent decision-support platform designed for product managers and product leaders. Leveraging GPT-4o's advanced reasoning capabilities, it provides strategic analysis for product decisions and diagnostic insights for product metrics.
+Product Playground is an intelligent decision-support platform designed for product managers and product leaders. Leveraging GPT-4o's advanced reasoning capabilities, it provides a comprehensive toolkit for product analysis, strategic decisions, and continuous learning.
 
 ### Key Features
 
-- **🎯 Product Challenge Analysis**: Get comprehensive strategic recommendations for complex product decisions
-- **📊 Dashboard KPI Diagnostics**: Analyze product metrics, identify issues, and receive actionable improvement strategies
-- **� Product Teardown**: Conduct structured product and market analysis based on any website URL
-- **�📥 PDF Export**: Generate professional analysis reports for stakeholder distribution
+#### Core Analysis Tools
+- **💡 Product Challenge Analysis**: Get comprehensive strategic recommendations for complex product decisions
+- **📈 Dashboard KPI Diagnostics**: Analyze 8 core product metrics and identify issues with actionable insights
+- **🔍 Product Teardown**: Conduct structured product and market analysis from any website URL
+
+#### Decision Support System (New!)
+- **🎯 Decision Framing Engine**: Clarify what decision is actually being made before analysis begins
+- **📊 Decision Dashboard**: Understand signals, form competing hypotheses, and assess what's going wrong
+- **⚡ Confidence Meter**: Qualitatively assess whether there's enough signal to act with confidence
+- **🛡️ Decision Defense Pack**: Create executive-friendly briefs to communicate and defend decisions
+- **🔄 Decision Retrospective**: Capture learnings after decisions to improve future judgment
+
+#### Additional Features
+- **🧭 Guided Walkthrough**: 5-step framework for structured product thinking and analysis
+- **📥 PDF Export**: Generate professional analysis reports for all features
 - **🎨 Professional Interface**: Clean, sophisticated design optimized for executive audiences
 - **⚡ Real-time Analysis**: Instant AI-powered insights using GPT-4o
 
 ## Use Cases
 
 ### For Product Managers
-- Evaluate feature prioritization decisions
-- Analyze A/B test results and next steps
+- Frame decisions clearly before diving into analysis
+- Evaluate feature prioritization with confidence assessment
+- Analyze A/B test results and form competing hypotheses
 - Navigate technical debt vs. new features trade-offs
-- Assess competitive positioning strategies
+- Defend decisions to stakeholders with executive briefs
 - Conduct competitive product analysis and teardowns
+- Learn from past decisions through structured retrospectives
 
 ### For Product Leaders
 - Review team's strategic proposals with AI-augmented perspective
-- Identify red flags in product metrics
+- Assess decision confidence levels across portfolio
+- Identify red flags in product metrics with hypothesis formation
 - Benchmark KPIs against industry standards
 - Prepare data-driven presentations for executives
-- Analyze competitor products and market positioning
+- Build decision-making muscle across the team
 
 ### For Startups
 - Make informed product decisions with limited resources
+- Frame critical decisions when there's no senior PM to consult
 - Validate product-market fit hypotheses
-- Optimize growth metrics efficiently
-- Prepare investor-ready product analyses
+- Assess confidence before committing scarce resources
+- Prepare investor-ready product analyses and decision briefs
 - Research competitor products and market opportunities
+- Build institutional knowledge through retrospectives
 
 ## Technology Stack
 
@@ -169,37 +185,87 @@ These can be adjusted in the `.env` file based on your needs and API budget.
 
 ## Features Deep Dive
 
-### Product Challenge Analysis
-
+### 1. Product Challenge Analysis
 Input any product decision scenario and receive:
-- **Problem Reframing**: Clarification of the core challenge
-- **Context Analysis**: Key factors and constraints evaluation
-- **Options Exploration**: Comprehensive alternatives assessment
-- **Trade-offs Matrix**: Risks vs. benefits for each option
-- **Strategic Recommendation**: Data-driven decision with rationale
-- **Execution Roadmap**: Prioritized next steps
-- **Success Metrics**: KPIs to track decision effectiveness
+- Problem reframing and context analysis
+- Options exploration with trade-offs matrix
+- Risk vs. benefits for each option
+- Strategic recommendation with rationale
+- Execution roadmap with prioritized next steps
+- Success metrics to track decision effectiveness
 
-### Dashboard KPI Diagnostics
-
-Analyze 8 key product metrics:
-- Daily Active Users (DAU)
-- Monthly Active Users (MAU)
-- Average Session Time
-- Conversion Rate
-- Churn Rate
-- 7-Day Retention Rate
-- Net Promoter Score (NPS)
-- Average Revenue Per User (ARPU)
-
-Receive analysis including:
+### 2. Dashboard KPI Diagnostics
+Analyze 8 key product metrics (DAU, MAU, Session Time, Conversion, Retention, Churn, NPS, ARPU):
 - Overall product health assessment
 - Metric-by-metric deep dives
-- Cross-metric pattern insights
-- Red flags and concerns
+- Cross-metric pattern insights and red flags
 - Root cause hypotheses
 - Prioritized action recommendations
 - Industry benchmarking context
+
+### 3. Product Teardown
+Analyze any product from its website URL:
+- Competitive intelligence insights
+- Business model assessment
+- Strategic risk evaluation
+- Market positioning analysis
+- PM questions to investigate
+
+### 4. Decision Framing Engine
+Clarify decisions before analysis:
+- Clear decision statement refinement
+- Stakeholder landscape mapping
+- Real options vs assumed options
+- Hard vs soft vs assumed constraints
+- Critical unknowns ranked by impact
+- Success signals defined
+
+### 5. Decision Dashboard
+Understand signals and form hypotheses:
+- Plain-language signal explanation
+- 3-5 competing hypotheses with evidence
+- What data shows vs what's inferred
+- Warning signs vs noise assessment
+- Risks of acting too quickly
+- What to watch next
+
+### 6. Confidence Meter
+Qualitative signal strength assessment:
+- Signal strength: Strong/Emerging/Weak (no percentages)
+- Evidence quality review
+- What's missing that matters
+- What would increase confidence
+- Confidence vs timeline tradeoff
+- Final judgment framing
+
+### 7. Decision Defense Pack
+Executive-friendly stakeholder communication:
+- 3-4 sentence executive summary
+- Clear decision statement
+- Rationale with business impact
+- Tradeoffs evaluated (table format)
+- Risks & mitigation plans
+- Success metrics and timeline
+- Talking points for Q&A
+
+### 8. Decision Retrospective
+Learning-focused post-decision analysis:
+- Outcome summary (expected vs actual)
+- What went right and why
+- What didn't go as planned
+- Assumptions that held vs broke
+- Key learnings about process, estimates, product/market
+- Concrete guidance for next time
+- Pattern recognition across decisions
+
+### 9. Guided Walkthrough
+5-step structured product thinking:
+- Target user and decision framing
+- Constraints, causes, and success signals
+- AI-powered analysis building on YOUR thinking
+- Tradeoffs and risk assessment
+- Recommended next steps
+- Complete analysis PDF export
 
 ## Security & Privacy
 
