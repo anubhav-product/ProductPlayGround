@@ -66,19 +66,21 @@ def analyze():
     try:
         data = request.json
         if not data:
-            return jsonify({'error': 'No JSON data provided'}), 400
+            return jsonify({'success': False, 'error': 'No JSON data provided'}), 400
             
         user_context = data.get('context', '')
         
         if not user_context.strip():
-            return jsonify({'error': 'Please provide a product challenge'}), 400
+            return jsonify({'success': False, 'error': 'Please provide a product challenge'}), 400
         
-        # Check if API key is configured
         if not os.getenv('OPENAI_API_KEY'):
-            return jsonify({'error': 'OpenAI API key not configured. Please set OPENAI_API_KEY environment variable.'}), 500
+            return jsonify({'success': False, 'error': 'OpenAI API key not configured'}), 500
         
         engine = ProductThinkingEngine()
         response = engine.analyze(user_context)
+        
+        if not response or len(response.strip()) == 0:
+            return jsonify({'success': False, 'error': 'Analysis generation failed'}), 500
         
         return jsonify({
             'success': True,
@@ -88,7 +90,7 @@ def analyze():
     except Exception as e:
         print(f"Error in /analyze: {str(e)}")
         print(traceback.format_exc())
-        return jsonify({'error': str(e), 'type': type(e).__name__}), 500
+        return jsonify({'success': False, 'error': f'Analysis failed: {str(e)}'}), 500
 
 @app.route('/analyze-kpi', methods=['POST'])
 def analyze_kpi():
@@ -137,24 +139,26 @@ def analyze_website():
     try:
         data = request.json
         if not data:
-            return jsonify({'error': 'No JSON data provided'}), 400
+            return jsonify({'success': False, 'error': 'No JSON data provided'}), 400
             
         website_url = data.get('website_url', '').strip()
         additional_context = data.get('additional_context', '').strip()
         
         if not website_url:
-            return jsonify({'error': 'Please provide a website URL'}), 400
+            return jsonify({'success': False, 'error': 'Please provide a website URL'}), 400
         
         # Basic URL validation
         if not website_url.startswith(('http://', 'https://')):
             website_url = 'https://' + website_url
         
-        # Check if API key is configured
         if not os.getenv('OPENAI_API_KEY'):
-            return jsonify({'error': 'OpenAI API key not configured. Please set OPENAI_API_KEY environment variable.'}), 500
+            return jsonify({'success': False, 'error': 'OpenAI API key not configured. Please set OPENAI_API_KEY environment variable.'}), 500
         
         engine = ProductThinkingEngine()
         response = engine.analyze_website(website_url, additional_context)
+        
+        if not response or len(response.strip()) == 0:
+            return jsonify({'success': False, 'error': 'Generated analysis was empty. Please try again.'}), 500
         
         return jsonify({
             'success': True,
@@ -163,7 +167,39 @@ def analyze_website():
             'timestamp': datetime.now().strftime("%Y%m%d_%H%M%S")
         })
     except Exception as e:
-        print(f"Error in /analyze-website: {str(e)}")
+        error_msg = str(e)
+        print(f"Error in /analyze-website: {error_msg}")
+        print(traceback.format_exc())
+        return jsonify({'success': False, 'error': f'Website analysis failed: {error_msg}'}), 500
+
+@app.route('/analyze-walkthrough', methods=['POST'])
+def analyze_walkthrough():
+    """Handle walkthrough mode analysis with structured guidance"""
+    try:
+        data = request.json
+        if not data:
+            return jsonify({'error': 'No JSON data provided'}), 400
+            
+        user_context = data.get('context', '')
+        walkthrough_data = data.get('walkthrough_data', {})
+        
+        if not user_context.strip():
+            return jsonify({'error': 'Please provide context for analysis'}), 400
+        
+        # Check if API key is configured
+        if not os.getenv('OPENAI_API_KEY'):
+            return jsonify({'error': 'OpenAI API key not configured. Please set OPENAI_API_KEY environment variable.'}), 500
+        
+        engine = ProductThinkingEngine()
+        response = engine.analyze_walkthrough(user_context, walkthrough_data)
+        
+        return jsonify({
+            'success': True,
+            'analysis': response,
+            'timestamp': datetime.now().strftime("%Y%m%d_%H%M%S")
+        })
+    except Exception as e:
+        print(f"Error in /analyze-walkthrough: {str(e)}")
         print(traceback.format_exc())
         return jsonify({'error': str(e), 'type': type(e).__name__}), 500
 
@@ -180,53 +216,53 @@ def download_pdf():
         
         # Custom page template with header/footer
         class NumberedCanvas(canvas.Canvas):
+            """Custom canvas for headers, footers, and page numbers"""
             def __init__(self, *args, **kwargs):
                 canvas.Canvas.__init__(self, *args, **kwargs)
-                self._saved_page_states = []
+                self.pages = []
 
             def showPage(self):
-                self._saved_page_states.append(dict(self.__dict__))
+                """Save each page for later rendering"""
+                self.pages.append(dict(self.__dict__))
                 self._startPage()
 
             def save(self):
-                num_pages = len(self._saved_page_states)
-                for state in self._saved_page_states:
-                    self.__dict__.update(state)
-                    self.draw_page_decorations(num_pages)
+                """Render all pages with decorations"""
+                page_count = len(self.pages)
+                for page_num in range(page_count):
+                    self.__dict__.update(self.pages[page_num])
+                    self.draw_page_number(page_num + 1, page_count)
                     canvas.Canvas.showPage(self)
                 canvas.Canvas.save(self)
 
-            def draw_page_decorations(self, page_count):
+            def draw_page_number(self, page_num, page_count):
+                """Draw page number on each page"""
                 self.saveState()
-                
-                # Header with gradient effect (simulated with lines)
-                self.setStrokeColor(colors.HexColor('#6366f1'))
-                self.setLineWidth(3)
-                self.line(0.75*inch, letter[1] - 0.5*inch, letter[0] - 0.75*inch, letter[1] - 0.5*inch)
-                
-                self.setStrokeColor(colors.HexColor('#8b5cf6'))
-                self.setLineWidth(2)
-                self.line(0.75*inch, letter[1] - 0.52*inch, letter[0] - 0.75*inch, letter[1] - 0.52*inch)
-                
-                # Header text
-                self.setFont('Helvetica-Bold', 10)
-                self.setFillColor(colors.HexColor('#2c3e50'))
-                self.drawString(0.75*inch, letter[1] - 0.35*inch, "Product Playground · Strategic Analysis Report")
-                
-                # Footer
                 self.setFont('Helvetica', 9)
                 self.setFillColor(colors.HexColor('#7f8c8d'))
-                footer_text = f"Generated on {timestamp.strftime('%B %d, %Y at %I:%M %p')}"
-                self.drawString(0.75*inch, 0.5*inch, footer_text)
                 
-                # Page number
-                page_num = f"Page {self._pageNumber} of {page_count}"
-                self.drawRightString(letter[0] - 0.75*inch, 0.5*inch, page_num)
+                # Only add header/footer if not first page (cover) and not last page (thank you)
+                if page_num > 1 and page_num < page_count:
+                    # Header line
+                    self.setStrokeColor(colors.HexColor('#e1e8ed'))
+                    self.setLineWidth(1)
+                    self.line(0.75*inch, letter[1] - 0.6*inch, letter[0] - 0.75*inch, letter[1] - 0.6*inch)
+                    
+                    # Header text
+                    self.setFont('Helvetica-Bold', 10)
+                    self.setFillColor(colors.HexColor('#6366f1'))
+                    self.drawString(0.75*inch, letter[1] - 0.5*inch, "Product Playground")
+                    
+                    # Footer line
+                    self.setStrokeColor(colors.HexColor('#e1e8ed'))
+                    self.line(0.75*inch, 0.65*inch, letter[0] - 0.75*inch, 0.65*inch)
                 
-                # Footer line
-                self.setStrokeColor(colors.HexColor('#e1e8ed'))
-                self.setLineWidth(1)
-                self.line(0.75*inch, 0.65*inch, letter[0] - 0.75*inch, 0.65*inch)
+                # Page number on all pages except cover
+                if page_num > 1:
+                    self.setFont('Helvetica', 9)
+                    self.setFillColor(colors.HexColor('#7f8c8d'))
+                    page_text = f"Page {page_num - 1} of {page_count - 2}"  # Exclude cover and thank you page
+                    self.drawRightString(letter[0] - 0.75*inch, 0.5*inch, page_text)
                 
                 self.restoreState()
 
@@ -537,5 +573,145 @@ def download_pdf():
         print(traceback.format_exc())
         return jsonify({'error': str(e)}), 500
 
+@app.route('/analyze-framing', methods=['POST'])
+def analyze_framing():
+    """Handle decision framing analysis"""
+    try:
+        data = request.json
+        if not data:
+            return jsonify({'error': 'No JSON data provided'}), 400
+        
+        decision = data.get('decision', '')
+        if not decision.strip():
+            return jsonify({'error': 'Please provide a decision statement'}), 400
+        
+        if not os.getenv('OPENAI_API_KEY'):
+            return jsonify({'error': 'OpenAI API key not configured'}), 500
+        
+        engine = ProductThinkingEngine()
+        response = engine.analyze_decision_framing(data)
+        
+        return jsonify({
+            'success': True,
+            'analysis': response,
+            'timestamp': datetime.now().strftime("%Y%m%d_%H%M%S")
+        })
+    except Exception as e:
+        print(f"Error in /analyze-framing: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/analyze-dashboard', methods=['POST'])
+def analyze_dashboard():
+    """Handle decision dashboard analysis"""
+    try:
+        data = request.json
+        if not data:
+            return jsonify({'error': 'No JSON data provided'}), 400
+        
+        problem = data.get('problem', '')
+        if not problem.strip():
+            return jsonify({'error': 'Please describe what appears to be going wrong'}), 400
+        
+        if not os.getenv('OPENAI_API_KEY'):
+            return jsonify({'error': 'OpenAI API key not configured'}), 500
+        
+        engine = ProductThinkingEngine()
+        response = engine.analyze_decision_dashboard(data)
+        
+        return jsonify({
+            'success': True,
+            'analysis': response,
+            'timestamp': datetime.now().strftime("%Y%m%d_%H%M%S")
+        })
+    except Exception as e:
+        print(f"Error in /analyze-dashboard: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/analyze-confidence', methods=['POST'])
+def analyze_confidence():
+    """Handle decision confidence assessment"""
+    try:
+        data = request.json
+        if not data:
+            return jsonify({'error': 'No JSON data provided'}), 400
+        
+        decision = data.get('decision', '')
+        if not decision.strip():
+            return jsonify({'error': 'Please provide a decision statement'}), 400
+        
+        if not os.getenv('OPENAI_API_KEY'):
+            return jsonify({'error': 'OpenAI API key not configured'}), 500
+        
+        engine = ProductThinkingEngine()
+        response = engine.analyze_decision_confidence(data)
+        
+        return jsonify({
+            'success': True,
+            'analysis': response,
+            'timestamp': datetime.now().strftime("%Y%m%d_%H%M%S")
+        })
+    except Exception as e:
+        print(f"Error in /analyze-confidence: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/analyze-defense', methods=['POST'])
+def analyze_defense():
+    """Handle decision defense pack generation"""
+    try:
+        data = request.json
+        if not data:
+            return jsonify({'error': 'No JSON data provided'}), 400
+        
+        decision = data.get('decision', '')
+        if not decision.strip():
+            return jsonify({'error': 'Please provide a decision statement'}), 400
+        
+        if not os.getenv('OPENAI_API_KEY'):
+            return jsonify({'error': 'OpenAI API key not configured'}), 500
+        
+        engine = ProductThinkingEngine()
+        response = engine.generate_decision_defense(data)
+        
+        return jsonify({
+            'success': True,
+            'analysis': response,
+            'timestamp': datetime.now().strftime("%Y%m%d_%H%M%S")
+        })
+    except Exception as e:
+        print(f"Error in /analyze-defense: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/analyze-retrospective', methods=['POST'])
+def analyze_retrospective():
+    """Handle decision retrospective analysis"""
+    try:
+        data = request.json
+        if not data:
+            return jsonify({'error': 'No JSON data provided'}), 400
+        
+        decision = data.get('decision', '')
+        if not decision.strip():
+            return jsonify({'error': 'Please provide a decision statement'}), 400
+        
+        if not os.getenv('OPENAI_API_KEY'):
+            return jsonify({'error': 'OpenAI API key not configured'}), 500
+        
+        engine = ProductThinkingEngine()
+        response = engine.analyze_retrospective(data)
+        
+        return jsonify({
+            'success': True,
+            'analysis': response,
+            'timestamp': datetime.now().strftime("%Y%m%d_%H%M%S")
+        })
+    except Exception as e:
+        print(f"Error in /analyze-retrospective: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

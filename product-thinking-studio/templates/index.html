@@ -374,6 +374,140 @@
             letter-spacing: 0.5px;
         }
 
+        /* Walkthrough Mode Styles */
+        .step-indicator {
+            flex: 1;
+            text-align: center;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .step-indicator.active {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--primary);
+        }
+
+        .step-indicator.completed {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: var(--success);
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            margin: 0 auto 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .step-indicator.active .step-number {
+            background: var(--primary);
+            color: white;
+        }
+
+        .step-indicator.completed .step-number {
+            background: var(--success);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .step-indicator.active .step-label {
+            color: var(--primary);
+        }
+
+        .step-indicator.completed .step-label {
+            color: var(--success);
+        }
+
+        .walkthrough-step {
+            animation: slideUp 0.4s ease-out;
+            display: block;
+        }
+
+        .walkthrough-step.hidden {
+            display: none !important;
+        }
+
+        /* Learning Resources Styles */
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .resource-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.75rem;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .resource-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .resource-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .resource-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+        }
+
+        .resource-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .resource-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.25rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 10px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .resource-link:hover {
+            background: rgba(99, 102, 241, 0.2);
+            transform: translateX(4px);
+        }
+
         /* Utility Classes */
         .hidden {
             display: none;
@@ -459,6 +593,7 @@
                     <span>💡</span>
                     <span>Describe Your Product Challenge</span>
                 </h2>
+                
                 <div class="form-group">
                     <textarea 
                         id="challenge-input" 
@@ -596,10 +731,499 @@
             </div>
             <div id="teardown-result" class="hidden"></div>
         </div>
+
+        <!-- Walkthrough Mode Tab -->
+        <div id="walkthrough-tab" class="tab-content hidden">
+            <div class="glass-card">
+                <h2 class="section-header">
+                    <span>🧭</span>
+                    <span>Guided Product Thinking Walkthrough</span>
+                </h2>
+                <p style="color: var(--text-muted); margin-bottom: 2rem; line-height: 1.7;">
+                    A structured 5-step framework to guide your product decision-making. The AI builds on YOUR thinking, not replaces it.
+                </p>
+
+                <div id="walkthrough-alert" class="hidden"></div>
+
+                <!-- Step Indicator -->
+                <div style="display: flex; justify-content: space-between; margin-bottom: 2rem; gap: 0.5rem;">
+                    <div class="step-indicator active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Problem Framing</div>
+                    </div>
+                    <div class="step-indicator" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Hypothesis</div>
+                    </div>
+                    <div class="step-indicator" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">AI Analysis</div>
+                    </div>
+                    <div class="step-indicator" data-step="4">
+                        <div class="step-number">4</div>
+                        <div class="step-label">Tradeoffs</div>
+                    </div>
+                    <div class="step-indicator" data-step="5">
+                        <div class="step-number">5</div>
+                        <div class="step-label">Next Steps</div>
+                    </div>
+                </div>
+
+                <div id="walkthrough-loading" class="hidden loading">
+                    <div class="spinner"></div>
+                    <p style="color: var(--text-muted);">🧠 Analyzing based on your thinking...</p>
+                </div>
+
+                <!-- Step 1: Problem Framing -->
+                <div id="wt-step-1" class="walkthrough-step">
+                    <h3 class="subsection-header">
+                        <span>🎯</span>
+                        <span>Step 1: Problem Framing</span>
+                    </h3>
+                    <p style="color: var(--text-muted); margin-bottom: 2rem; line-height: 1.7;">
+                        Start by clearly defining the problem space and constraints.
+                    </p>
+                    <div class="form-group">
+                        <label>Who is the target user? *</label>
+                        <input type="text" id="wt-target-user" placeholder="e.g., B2B SaaS users in mid-market companies (50-500 employees)">
+                    </div>
+                    <div class="form-group">
+                        <label>What decision are you trying to make? *</label>
+                        <textarea id="wt-decision" rows="4" placeholder="e.g., Whether to add real-time collaboration features or improve async collaboration tools"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>What constraints exist?</label>
+                        <textarea id="wt-constraints" rows="3" placeholder="e.g., 2 engineering sprints available, must maintain current page load performance"></textarea>
+                    </div>
+                    <button class="btn" onclick="goToStep2()">
+                        <span>→</span>
+                        <span>Continue to Hypothesis</span>
+                    </button>
+                </div>
+
+                <!-- Step 2: Hypothesis Formation -->
+                <div id="wt-step-2" class="walkthrough-step hidden">
+                    <h3 class="subsection-header">
+                        <span>💡</span>
+                        <span>Step 2: Hypothesis Formation</span>
+                    </h3>
+                    <p style="color: var(--text-muted); margin-bottom: 2rem; line-height: 1.7;">
+                        Form hypotheses about what might be causing the problem and what success would look like.
+                    </p>
+                    <div class="form-group">
+                        <label>What are possible causes or opportunities?</label>
+                        <textarea id="wt-causes" rows="4" placeholder="e.g., Users switching to competing tools for real-time collaboration, or they prefer async due to distributed teams"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>What would success look like?</label>
+                        <textarea id="wt-success" rows="4" placeholder="e.g., Increase DAU/MAU from 35% to 45%, reduce churn from 8% to 6%, maintain NPS of 42+"></textarea>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <button class="btn" style="background: rgba(255, 255, 255, 0.1);" onclick="goToStep1()">
+                            <span>←</span>
+                            <span>Back to Problem Framing</span>
+                        </button>
+                        <button class="btn" onclick="generateAnalysis()" style="flex: 1;">
+                            <span>🚀</span>
+                            <span>Generate AI Analysis</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: AI Analysis -->
+                <div id="wt-step-3" class="walkthrough-step hidden">
+                    <h3 class="subsection-header">
+                        <span>🤖</span>
+                        <span>Step 3: AI Analysis & Insights</span>
+                    </h3>
+                    <div id="wt-analysis-content" style="line-height: 1.8;"></div>
+                    <div style="margin-top: 2rem;">
+                        <button class="btn" onclick="goToStep4()">
+                            <span>→</span>
+                            <span>Continue to Tradeoffs & Risks</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Tradeoffs & Risks -->
+                <div id="wt-step-4" class="walkthrough-step hidden">
+                    <h3 class="subsection-header">
+                        <span>⚖️</span>
+                        <span>Step 4: Tradeoffs & Risks</span>
+                    </h3>
+                    <div id="wt-tradeoffs-content" style="line-height: 1.8;"></div>
+                    <div style="margin-top: 2rem;">
+                        <button class="btn" onclick="goToStep5()">
+                            <span>→</span>
+                            <span>View Recommended Next Steps</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 5: Next Steps & Decision -->
+                <div id="wt-step-5" class="walkthrough-step hidden">
+                    <h3 class="subsection-header">
+                        <span>🎯</span>
+                        <span>Step 5: Recommended Next Steps</span>
+                    </h3>
+                    <div id="wt-nextsteps-content" style="line-height: 1.8;"></div>
+                    <div style="padding: 1.5rem; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 12px; margin-top: 2rem;">
+                        <p style="margin: 0; color: var(--warning); font-weight: 500; line-height: 1.7;">
+                            ⚠️ <strong>Remember:</strong> This analysis provides context and structure for your thinking. The final decision and judgment remain with you.
+                        </p>
+                    </div>
+                    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                        <button class="btn btn-secondary" onclick="startNewWalkthrough()">
+                            <span>🔄</span>
+                            <span>Start New Walkthrough</span>
+                        </button>
+                        <button class="btn" onclick="downloadWalkthroughPDF()" style="flex: 1;">
+                            <span>📥</span>
+                            <span>Download Complete Analysis (PDF)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decision Framing Tab -->
+        <div id="framing-tab" class="tab-content hidden">
+            <div class="glass-card">
+                <h2 class="section-header">
+                    <span>🎯</span>
+                    <span>Decision Framing Engine</span>
+                </h2>
+                <p style="color: var(--text-muted); margin-bottom: 2rem; line-height: 1.7;">
+                    Before analyzing, let's clarify what decision is actually being made. This frames everything that follows.
+                </p>
+
+                <div class="form-group">
+                    <label>📝 Decision Statement</label>
+                    <textarea 
+                        id="framing-decision" 
+                        rows="3"
+                        placeholder="Example: Should we build an AI-powered search feature for our SaaS product in Q2, or invest in fixing technical debt in our core infrastructure?"
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>👥 Key Stakeholders</label>
+                    <textarea 
+                        id="framing-stakeholders" 
+                        rows="2"
+                        placeholder="Example: Engineering (concerned about velocity), Product (wants new features), CEO (wants growth metrics), Customers (demanding better search)"
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>⚖️ Options on the Table</label>
+                    <textarea 
+                        id="framing-options" 
+                        rows="3"
+                        placeholder="Example: A) Build AI search with external API, B) Build simpler keyword search ourselves, C) Defer search entirely and fix infrastructure, D) Hire contractor to do both"
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>🔒 Constraints</label>
+                    <textarea 
+                        id="framing-constraints" 
+                        rows="2"
+                        placeholder="Example: 2 engineers available, $50K budget, must ship something in 8 weeks, can't break existing integrations"
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>✅ Success Signals</label>
+                    <textarea 
+                        id="framing-success" 
+                        rows="2"
+                        placeholder="Example: Users find what they need in under 10 seconds, support tickets about search drop 30%, engineering team feels good about the codebase"
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>❓ Key Unknowns & Risks</label>
+                    <textarea 
+                        id="framing-unknowns" 
+                        rows="2"
+                        placeholder="Example: Unknown if AI search will actually improve outcomes, risk that technical debt slows us down more than expected, unsure if 8 weeks is realistic"
+                    ></textarea>
+                </div>
+
+                <button class="btn" onclick="analyzeFraming()">
+                    <span>🚀</span>
+                    <span>Clarify Decision</span>
+                </button>
+            </div>
+
+            <div id="framing-alert" class="hidden"></div>
+            <div id="framing-loading" class="hidden loading">
+                <div class="spinner"></div>
+                <p style="color: var(--text-muted);">🧠 Clarifying your decision frame...</p>
+            </div>
+            <div id="framing-result" class="hidden"></div>
+        </div>
+
+        <!-- Decision Dashboard Tab -->
+        <div id="dashboard-tab" class="tab-content hidden">
+            <div class="glass-card">
+                <h2 class="section-header">
+                    <span>📊</span>
+                    <span>Decision Dashboard</span>
+                </h2>
+                <p style="color: var(--text-muted); margin-bottom: 2rem; line-height: 1.7;">
+                    Understand what signals suggest something is going wrong and what that might mean.
+                </p>
+
+                <div class="form-group">
+                    <label>📉 What Appears to be Going Wrong?</label>
+                    <textarea 
+                        id="dashboard-problem" 
+                        rows="4"
+                        placeholder="Example: Our mobile app DAU dropped 18% over last 3 weeks. Session time is down 22%. However, our web DAU actually increased 5%. New user signups are flat. Support tickets about app crashes tripled."
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>📊 Supporting Data (Optional)</label>
+                    <textarea 
+                        id="dashboard-data" 
+                        rows="3"
+                        placeholder="Example: DAU went from 45K to 37K. Average session 8min → 6.2min. iOS crash rate 0.4% → 1.8%. Android stable. Web traffic 22K → 23K."
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>🕐 Timeline & Context (Optional)</label>
+                    <textarea 
+                        id="dashboard-context" 
+                        rows="2"
+                        placeholder="Example: Started noticing decline 3 weeks ago after iOS app update. No major product changes. Competitor launched mobile redesign 4 weeks ago."
+                    ></textarea>
+                </div>
+
+                <button class="btn" onclick="analyzeDashboard()">
+                    <span>🚀</span>
+                    <span>Analyze Signals</span>
+                </button>
+            </div>
+
+            <div id="dashboard-alert" class="hidden"></div>
+            <div id="dashboard-loading" class="hidden loading">
+                <div class="spinner"></div>
+                <p style="color: var(--text-muted);">🧠 Analyzing signals and forming hypotheses...</p>
+            </div>
+            <div id="dashboard-result" class="hidden"></div>
+        </div>
+
+        <!-- Decision Confidence Tab -->
+        <div id="confidence-tab" class="tab-content hidden">
+            <div class="glass-card">
+                <h2 class="section-header">
+                    <span>⚡</span>
+                    <span>Decision Confidence Meter</span>
+                </h2>
+                <p style="color: var(--text-muted); margin-bottom: 2rem; line-height: 1.7;">
+                    Assess whether there is enough signal to act with confidence, or if more information is needed.
+                </p>
+
+                <div class="form-group">
+                    <label>📝 Decision Being Considered</label>
+                    <textarea 
+                        id="confidence-decision" 
+                        rows="2"
+                        placeholder="Example: Launch new pricing tier at $199/month targeting enterprise customers"
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>✅ Evidence Supporting This Decision</label>
+                    <textarea 
+                        id="confidence-evidence" 
+                        rows="4"
+                        placeholder="Example: 12 enterprise customers asked for features we'd include in this tier. Our average contract value is $89/month and has been flat for 6 months. Survey shows willingness to pay more for SSO and advanced analytics."
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>❓ Gaps & Uncertainties</label>
+                    <textarea 
+                        id="confidence-gaps" 
+                        rows="3"
+                        placeholder="Example: Haven't actually tested the $199 price point with real contracts. Don't know if current customers would upgrade or if we need new customers. Competitive pricing unclear—some charge $99, others $499."
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>⏰ Decision Timeline (Optional)</label>
+                    <textarea 
+                        id="confidence-timeline" 
+                        rows="2"
+                        placeholder="Example: Want to announce at conference in 6 weeks, need to decide in next 2 weeks to have marketing ready"
+                    ></textarea>
+                </div>
+
+                <button class="btn" onclick="assessConfidence()">
+                    <span>🚀</span>
+                    <span>Assess Confidence</span>
+                </button>
+            </div>
+
+            <div id="confidence-alert" class="hidden"></div>
+            <div id="confidence-loading" class="hidden loading">
+                <div class="spinner"></div>
+                <p style="color: var(--text-muted);">🧠 Assessing signal strength and confidence...</p>
+            </div>
+            <div id="confidence-result" class="hidden"></div>
+        </div>
+
+        <!-- Decision Defense Tab -->
+        <div id="defense-tab" class="tab-content hidden">
+            <div class="glass-card">
+                <h2 class="section-header">
+                    <span>🛡️</span>
+                    <span>Decision Defense Pack</span>
+                </h2>
+                <p style="color: var(--text-muted); margin-bottom: 2rem; line-height: 1.7;">
+                    Create a clear, executive-friendly brief to communicate and defend your decision to stakeholders.
+                </p>
+
+                <div class="form-group">
+                    <label>📝 Decision Made</label>
+                    <textarea 
+                        id="defense-decision" 
+                        rows="2"
+                        placeholder="Example: We're deprecating our Android tablet app and focusing mobile engineering entirely on phones"
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>🎯 Why This Decision?</label>
+                    <textarea 
+                        id="defense-rationale" 
+                        rows="4"
+                        placeholder="Example: Tablets are 2% of our user base but consume 30% of our mobile engineering time due to unique layouts and edge cases. Phone users have 3x higher engagement and represent our growth segment. Maintaining tablet version delays phone features by ~6 weeks per quarter."
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>⚖️ Tradeoffs Considered</label>
+                    <textarea 
+                        id="defense-tradeoffs" 
+                        rows="3"
+                        placeholder="Example: We'll lose some tablet users (estimated 400-600 monthly actives). Risk alienating power users who prefer tablets. Could hurt brand perception. Alternative was hiring another mobile engineer ($180K/year), but recruiting timeline is 4+ months."
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>🚨 Known Risks</label>
+                    <textarea 
+                        id="defense-risks" 
+                        rows="2"
+                        placeholder="Example: Some enterprise customers use tablets for field work—could trigger churn. Competitor might highlight this as weakness. Media coverage could be negative."
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>👥 Target Audience for Brief</label>
+                    <input 
+                        type="text" 
+                        id="defense-audience" 
+                        placeholder="Example: Executive team, Board of Directors, All-hands presentation"
+                    >
+                </div>
+
+                <button class="btn" onclick="generateDefense()">
+                    <span>🚀</span>
+                    <span>Generate Defense Brief</span>
+                </button>
+            </div>
+
+            <div id="defense-alert" class="hidden"></div>
+            <div id="defense-loading" class="hidden loading">
+                <div class="spinner"></div>
+                <p style="color: var(--text-muted);">🧠 Crafting your decision defense brief...</p>
+            </div>
+            <div id="defense-result" class="hidden"></div>
+        </div>
+
+        <!-- Decision Retrospective Tab -->
+        <div id="retrospective-tab" class="tab-content hidden">
+            <div class="glass-card">
+                <h2 class="section-header">
+                    <span>🔄</span>
+                    <span>Decision Retrospective</span>
+                </h2>
+                <p style="color: var(--text-muted); margin-bottom: 2rem; line-height: 1.7;">
+                    Capture what actually happened after a decision to improve future judgment. This is about learning, not blame.
+                </p>
+
+                <div class="form-group">
+                    <label>📝 Original Decision</label>
+                    <textarea 
+                        id="retro-decision" 
+                        rows="2"
+                        placeholder="Example: 6 months ago, we decided to rebuild our dashboard with React instead of fixing the jQuery version"
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>🎯 What We Expected to Happen</label>
+                    <textarea 
+                        id="retro-expected" 
+                        rows="3"
+                        placeholder="Example: Estimated 8 weeks to rebuild, then 50% faster feature development, better performance, easier hiring. Expected to ship 3 major features in Q3 that were blocked by old tech."
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>✅ What Actually Happened</label>
+                    <textarea 
+                        id="retro-actual" 
+                        rows="4"
+                        placeholder="Example: Rebuild took 14 weeks (75% over estimate). Did ship with better performance. Only shipped 1 of 3 planned features. Hiring got easier. Team morale improved significantly. Support tickets about dashboard bugs dropped 60%."
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>💡 Key Assumptions: What Held True? What Broke?</label>
+                    <textarea 
+                        id="retro-assumptions" 
+                        rows="3"
+                        placeholder="Example: HELD: React would improve performance and hiring. BROKE: Our time estimates—underestimated complexity of migrating user settings and saved views. Learning curve was steeper than expected."
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>📚 What Would You Do Differently?</label>
+                    <textarea 
+                        id="retro-differently" 
+                        rows="3"
+                        placeholder="Example: Would've done incremental migration instead of big rewrite. Should have prototyped the hardest part (settings migration) first. Time estimates should've had 50% buffer for unknowns."
+                    ></textarea>
+                </div>
+
+                <button class="btn" onclick="generateRetrospective()">
+                    <span>🚀</span>
+                    <span>Capture Learnings</span>
+                </button>
+            </div>
+
+            <div id="retrospective-alert" class="hidden"></div>
+            <div id="retrospective-loading" class="hidden loading">
+                <div class="spinner"></div>
+                <p style="color: var(--text-muted);">🧠 Analyzing retrospective and extracting learnings...</p>
+            </div>
+            <div id="retrospective-result" class="hidden"></div>
+        </div>
     </div>
 
     <script>
         let currentAnalysis = null;
+        let walkthroughMode = false;
+        let currentWalkthroughStep = 1;
+        let walkthroughData = {};
 
         // Get tab from URL parameter
         function getTabFromURL() {
@@ -622,6 +1246,22 @@
             if (tabElement) {
                 tabElement.classList.remove('hidden');
                 
+                // Initialize walkthrough on first load
+                if (tab === 'walkthrough' && currentWalkthroughStep === 1) {
+                    // Ensure step 1 is visible
+                    for (let i = 1; i <= 5; i++) {
+                        const stepEl = document.getElementById(`wt-step-${i}`);
+                        if (stepEl) {
+                            if (i === 1) {
+                                stepEl.classList.remove('hidden');
+                            } else {
+                                stepEl.classList.add('hidden');
+                            }
+                        }
+                    }
+                    updateStepIndicators();
+                }
+                
                 // Update page title based on tab
                 const titles = {
                     'challenge': {
@@ -635,6 +1275,30 @@
                     'teardown': {
                         title: '🔍 Product Teardown',
                         subtitle: 'Comprehensive product & market analysis from any website'
+                    },
+                    'walkthrough': {
+                        title: '🧭 Guided Product Thinking',
+                        subtitle: 'A structured 5-step framework for better product decisions'
+                    },
+                    'framing': {
+                        title: '🎯 Decision Framing Engine',
+                        subtitle: 'Clarify what decision is actually being made before analysis begins'
+                    },
+                    'dashboard': {
+                        title: '📊 Decision Dashboard',
+                        subtitle: 'Understand where things appear to be going wrong and why it matters'
+                    },
+                    'confidence': {
+                        title: '⚡ Confidence Meter',
+                        subtitle: 'Assess whether there is enough signal to act with confidence'
+                    },
+                    'defense': {
+                        title: '🛡️ Decision Defense Pack',
+                        subtitle: 'Clearly communicate and defend decisions to stakeholders'
+                    },
+                    'retrospective': {
+                        title: '🔄 Decision Retrospective',
+                        subtitle: 'Capture learning after decisions to improve future judgment'
                     }
                 };
                 
@@ -643,6 +1307,321 @@
                     document.getElementById('page-subtitle').textContent = titles[tab].subtitle;
                 }
             }
+        }
+
+        // Walkthrough Mode Navigation Functions
+        function goToStep1() {
+            navigateToStep(1);
+        }
+
+        function goToStep2() {
+            // Validate Step 1 fields
+            const targetUser = document.getElementById('wt-target-user').value.trim();
+            const decision = document.getElementById('wt-decision').value.trim();
+            
+            if (!targetUser || !decision) {
+                const alertDiv = document.getElementById('walkthrough-alert');
+                showAlert(alertDiv, '⚠️ Please fill in Target User and Decision (required fields)', 'error');
+                return;
+            }
+            
+            navigateToStep(2);
+        }
+
+        function goToStep3() {
+            navigateToStep(3);
+        }
+
+        function goToStep4() {
+            navigateToStep(4);
+        }
+
+        function goToStep5() {
+            navigateToStep(5);
+        }
+
+        function navigateToStep(stepNumber) {
+            // Hide all steps
+            for (let i = 1; i <= 5; i++) {
+                const stepEl = document.getElementById(`wt-step-${i}`);
+                if (stepEl) {
+                    stepEl.classList.add('hidden');
+                }
+            }
+            
+            // Show target step
+            currentWalkthroughStep = stepNumber;
+            const targetStep = document.getElementById(`wt-step-${stepNumber}`);
+            if (targetStep) {
+                targetStep.classList.remove('hidden');
+            }
+            
+            // Update indicators
+            updateStepIndicators();
+            
+            // Hide alert and loading
+            const alertDiv = document.getElementById('walkthrough-alert');
+            const loadingDiv = document.getElementById('walkthrough-loading');
+            if (alertDiv) alertDiv.className = 'hidden';
+            if (loadingDiv) loadingDiv.classList.add('hidden');
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateStepIndicators() {
+            for (let i = 1; i <= 5; i++) {
+                const indicator = document.querySelector(`.step-indicator[data-step="${i}"]`);
+                if (!indicator) continue;
+                
+                if (i < currentWalkthroughStep) {
+                    indicator.classList.add('completed');
+                    indicator.classList.remove('active');
+                } else if (i === currentWalkthroughStep) {
+                    indicator.classList.add('active');
+                    indicator.classList.remove('completed');
+                } else {
+                    indicator.classList.remove('active', 'completed');
+                }
+            }
+        }
+
+        function startNewWalkthrough() {
+            // Clear all inputs
+            document.getElementById('wt-target-user').value = '';
+            document.getElementById('wt-decision').value = '';
+            document.getElementById('wt-constraints').value = '';
+            document.getElementById('wt-causes').value = '';
+            document.getElementById('wt-success').value = '';
+            
+            // Clear analysis content
+            document.getElementById('wt-analysis-content').innerHTML = '';
+            document.getElementById('wt-tradeoffs-content').innerHTML = '';
+            document.getElementById('wt-nextsteps-content').innerHTML = '';
+            
+            // Reset to step 1
+            currentAnalysis = null;
+            navigateToStep(1);
+        }
+
+        async function generateAnalysis() {
+            // Collect walkthrough data
+            const walkthroughData = {
+                targetUser: document.getElementById('wt-target-user').value.trim(),
+                decision: document.getElementById('wt-decision').value.trim(),
+                constraints: document.getElementById('wt-constraints').value.trim(),
+                causes: document.getElementById('wt-causes').value.trim(),
+                success: document.getElementById('wt-success').value.trim()
+            };
+
+            // Validate required fields
+            if (!walkthroughData.targetUser || !walkthroughData.decision) {
+                const alertDiv = document.getElementById('walkthrough-alert');
+                showAlert(alertDiv, '⚠️ Please fill in at least the Target User and Decision fields', 'error');
+                return;
+            }
+
+            // Build context for AI
+            const context = `
+Target User: ${walkthroughData.targetUser}
+
+Decision to Make: ${walkthroughData.decision}
+
+Constraints: ${walkthroughData.constraints}
+
+Hypotheses about Causes/Opportunities: ${walkthroughData.causes}
+
+Success Criteria: ${walkthroughData.success}
+`;
+
+            const alertDiv = document.getElementById('walkthrough-alert');
+            const loadingDiv = document.getElementById('walkthrough-loading');
+
+            // Hide Step 2
+            document.getElementById('wt-step-2').classList.add('hidden');
+            
+            // Show loading
+            alertDiv.className = 'hidden';
+            loadingDiv.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/analyze-walkthrough', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        context: context,
+                        walkthrough_data: walkthroughData
+                    })
+                });
+
+                loadingDiv.classList.add('hidden');
+
+                if (!response.ok) {
+                    let errorMessage = 'Analysis failed';
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch {
+                        errorMessage = `Server error (${response.status})`;
+                    }
+                    showAlert(alertDiv, `❌ ${errorMessage}`, 'error');
+                    document.getElementById('wt-step-2').classList.remove('hidden');
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentAnalysis = {
+                        analysis: data.analysis,
+                        context: context,
+                        timestamp: data.timestamp
+                    };
+
+                    // Parse and display the analysis in steps 3, 4, 5
+                    displayWalkthroughAnalysis(data.analysis);
+                    
+                    // Move to step 3
+                    navigateToStep(3);
+                } else {
+                    showAlert(alertDiv, `❌ ${data.error || 'Analysis failed'}`, 'error');
+                    document.getElementById('wt-step-2').classList.remove('hidden');
+                }
+            } catch (error) {
+                loadingDiv.classList.add('hidden');
+                showAlert(alertDiv, `❌ Error: ${error.message}`, 'error');
+                document.getElementById('wt-step-2').classList.remove('hidden');
+            }
+        }
+
+        async function downloadWalkthroughPDF() {
+            if (!currentAnalysis) {
+                alert('No analysis available to download');
+                return;
+            }
+
+            try {
+                const response = await fetch('/download-pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        analysis: currentAnalysis.analysis,
+                        context: currentAnalysis.context
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to generate PDF');
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const timestamp = new Date().toISOString().split('T')[0];
+                a.download = `ProductThinking_Walkthrough_${timestamp}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } catch (error) {
+                alert('Error downloading PDF: ' + error.message);
+            }
+        }
+
+        function displayWalkthroughAnalysis(analysis) {
+            // Convert markdown to HTML with better formatting
+            const html = analysis
+                .replace(/^### (.+)$/gm, '<h3 style="color: var(--secondary); margin-top: 1.5rem; margin-bottom: 1rem; font-size: 1.2rem;">$1</h3>')
+                .replace(/^## (.+)$/gm, '<h2 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem; font-size: 1.4rem;">$1</h2>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong style="color: var(--text);">$1</strong>')
+                .replace(/^- (.+)$/gm, '<li style="margin-bottom: 0.5rem;">$1</li>')
+                .replace(/\n\n/g, '</p><p style="margin: 1rem 0; line-height: 1.8; color: var(--text-muted);">');
+
+            // Get current walkthrough data for display
+            const targetUser = document.getElementById('wt-target-user').value.trim();
+            const decision = document.getElementById('wt-decision').value.trim();
+
+            // Try to intelligently split content by common section patterns
+            const sections = analysis.split(/##\s+/);
+            
+            // Find risk/tradeoff section (look for keywords)
+            let riskSection = '';
+            let nextStepsSection = '';
+            let analysisSection = '';
+            
+            sections.forEach(section => {
+                const lowerSection = section.toLowerCase();
+                if (lowerSection.includes('risk') || lowerSection.includes('tradeoff') || lowerSection.includes('trade-off') || lowerSection.includes('caution')) {
+                    riskSection = section;
+                } else if (lowerSection.includes('next step') || lowerSection.includes('recommendation') || lowerSection.includes('suggested') || lowerSection.includes('action')) {
+                    nextStepsSection = section;
+                } else if (!analysisSection && section.trim().length > 50) {
+                    analysisSection = section;
+                }
+            });
+
+            // If no clear sections found, split analysis into thirds
+            if (!riskSection && !nextStepsSection) {
+                const parts = analysis.split('\n\n');
+                const third = Math.floor(parts.length / 3);
+                analysisSection = parts.slice(0, third * 2).join('\n\n');
+                riskSection = parts.slice(third * 2, third * 3).join('\n\n');
+                nextStepsSection = parts.slice(third * 3).join('\n\n');
+            }
+
+            // Format analysis content for Step 3
+            const step3Content = `
+                <div style="background: rgba(99, 102, 241, 0.05); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 1.5rem;">
+                    <p style="margin: 0; color: var(--text-muted); line-height: 1.7;">
+                        <strong style="color: var(--primary);">Your Input Context:</strong><br>
+                        <strong>Target User:</strong> ${targetUser}<br>
+                        <strong>Decision:</strong> ${decision}
+                    </p>
+                </div>
+                <div style="line-height: 1.8; color: var(--text-muted);">
+                    <p style="margin: 1rem 0; line-height: 1.8; color: var(--text-muted);">${analysisSection || html}</p>
+                </div>
+            `;
+            
+            // Format risk content for Step 4
+            const riskHtml = riskSection
+                .replace(/^### (.+)$/gm, '<h3 style="color: var(--warning); margin-top: 1.5rem; margin-bottom: 1rem;">$1</h3>')
+                .replace(/^## (.+)$/gm, '<h2 style="color: var(--warning); margin-top: 1rem; margin-bottom: 1rem;">$1</h2>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong style="color: var(--text);">$1</strong>')
+                .replace(/^- (.+)$/gm, '<li style="margin-bottom: 0.75rem; line-height: 1.7;">$1</li>')
+                .replace(/\n\n/g, '</p><p style="margin: 1rem 0; line-height: 1.8; color: var(--text-muted);">');
+            
+            const step4Content = `
+                <div style="line-height: 1.8;">
+                    <h2 style="color: var(--warning); margin-bottom: 1rem; font-size: 1.4rem;">⚠️ Risk Management</h2>
+                    <p style="margin: 1rem 0; line-height: 1.8; color: var(--text-muted);">${riskHtml || 'Analyzing potential risks and tradeoffs for this decision...'}</p>
+                </div>
+                <div style="padding: 1.5rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; margin-top: 1.5rem;">
+                    <p style="margin: 0; color: var(--error); font-weight: 500; line-height: 1.7;">
+                        ⚠️ Consider these risks carefully. No decision is without tradeoffs.
+                    </p>
+                </div>
+            `;
+            
+            // Format next steps content for Step 5
+            const nextStepsHtml = nextStepsSection
+                .replace(/^### (.+)$/gm, '<h3 style="color: var(--secondary); margin-top: 1.5rem; margin-bottom: 1rem;">$1</h3>')
+                .replace(/^## (.+)$/gm, '<h2 style="color: var(--secondary); margin-top: 1rem; margin-bottom: 1rem;">$1</h2>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong style="color: var(--text);">$1</strong>')
+                .replace(/^- (.+)$/gm, '<li style="margin-bottom: 0.75rem; line-height: 1.7;">$1</li>')
+                .replace(/\n\n/g, '</p><p style="margin: 1rem 0; line-height: 1.8; color: var(--text-muted);">');
+            
+            const step5Content = `
+                <div style="line-height: 1.8;">
+                    <h2 style="color: var(--secondary); margin-bottom: 1rem; font-size: 1.4rem;">🎯 Recommended Next Steps</h2>
+                    <p style="margin: 1rem 0; line-height: 1.8; color: var(--text-muted);">${nextStepsHtml || 'Based on the analysis, here are the recommended actions...'}</p>
+                </div>
+            `;
+
+            document.getElementById('wt-analysis-content').innerHTML = step3Content;
+            document.getElementById('wt-tradeoffs-content').innerHTML = step4Content;
+            document.getElementById('wt-nextsteps-content').innerHTML = step5Content;
         }
 
         function updateKPICards() {
@@ -709,8 +1688,21 @@
                     body: JSON.stringify({ context: input })
                 });
 
-                const data = await response.json();
                 loadingDiv.classList.add('hidden');
+
+                if (!response.ok) {
+                    let errorMessage = 'Analysis failed';
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch {
+                        errorMessage = `Server error (${response.status})`;
+                    }
+                    showAlert(alertDiv, `❌ ${errorMessage}`, 'error');
+                    return;
+                }
+
+                const data = await response.json();
 
                 if (data.success) {
                     currentAnalysis = {
@@ -765,8 +1757,21 @@
                     body: JSON.stringify(kpiData)
                 });
 
-                const data = await response.json();
                 loadingDiv.classList.add('hidden');
+
+                if (!response.ok) {
+                    let errorMessage = 'Analysis failed';
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch {
+                        errorMessage = `Server error (${response.status})`;
+                    }
+                    showAlert(alertDiv, `❌ ${errorMessage}`, 'error');
+                    return;
+                }
+
+                const data = await response.json();
 
                 if (data.success) {
                     currentAnalysis = {
@@ -811,8 +1816,21 @@
                     })
                 });
 
-                const data = await response.json();
                 loadingDiv.classList.add('hidden');
+
+                if (!response.ok) {
+                    let errorMessage = 'Analysis failed';
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch {
+                        errorMessage = `Server error (${response.status})`;
+                    }
+                    showAlert(alertDiv, `❌ ${errorMessage}`, 'error');
+                    return;
+                }
+
+                const data = await response.json();
 
                 if (data.success) {
                     currentAnalysis = {
@@ -881,6 +1899,371 @@
             } catch (error) {
                 alert('Error downloading PDF: ' + error.message);
             }
+        }
+
+        // Decision Framing Engine
+        async function analyzeFraming() {
+            const framingData = {
+                decision: document.getElementById('framing-decision').value.trim(),
+                stakeholders: document.getElementById('framing-stakeholders').value.trim(),
+                options: document.getElementById('framing-options').value.trim(),
+                constraints: document.getElementById('framing-constraints').value.trim(),
+                success: document.getElementById('framing-success').value.trim(),
+                unknowns: document.getElementById('framing-unknowns').value.trim()
+            };
+
+            const alertDiv = document.getElementById('framing-alert');
+            const loadingDiv = document.getElementById('framing-loading');
+            const resultDiv = document.getElementById('framing-result');
+
+            if (!framingData.decision) {
+                showAlert(alertDiv, '⚠️ Please provide a decision statement', 'error');
+                return;
+            }
+
+            alertDiv.className = 'hidden';
+            resultDiv.className = 'hidden';
+            loadingDiv.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/analyze-framing', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(framingData)
+                });
+
+                loadingDiv.classList.add('hidden');
+
+                if (!response.ok) {
+                    let errorMessage = 'Analysis failed';
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch {
+                        errorMessage = `Server error (${response.status})`;
+                    }
+                    showAlert(alertDiv, `❌ ${errorMessage}`, 'error');
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentAnalysis = {
+                        analysis: data.analysis,
+                        context: JSON.stringify(framingData),
+                        timestamp: data.timestamp,
+                        type: 'Decision Framing'
+                    };
+                    resultDiv.className = 'analysis-result';
+                    resultDiv.innerHTML = formatAnalysisHTML(data.analysis) + `
+                        <div style="margin-top: 2.5rem; text-align: center;">
+                            <button class="btn btn-secondary" onclick="downloadPDF()">
+                                <span>📥</span>
+                                <span>Download as PDF</span>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    showAlert(alertDiv, `❌ ${data.error || 'Analysis failed'}`, 'error');
+                }
+            } catch (error) {
+                loadingDiv.classList.add('hidden');
+                showAlert(alertDiv, `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Decision Dashboard
+        async function analyzeDashboard() {
+            const dashboardData = {
+                problem: document.getElementById('dashboard-problem').value.trim(),
+                data: document.getElementById('dashboard-data').value.trim(),
+                context: document.getElementById('dashboard-context').value.trim()
+            };
+
+            const alertDiv = document.getElementById('dashboard-alert');
+            const loadingDiv = document.getElementById('dashboard-loading');
+            const resultDiv = document.getElementById('dashboard-result');
+
+            if (!dashboardData.problem) {
+                showAlert(alertDiv, '⚠️ Please describe what appears to be going wrong', 'error');
+                return;
+            }
+
+            alertDiv.className = 'hidden';
+            resultDiv.className = 'hidden';
+            loadingDiv.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/analyze-dashboard', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dashboardData)
+                });
+
+                loadingDiv.classList.add('hidden');
+
+                if (!response.ok) {
+                    let errorMessage = 'Analysis failed';
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch {
+                        errorMessage = `Server error (${response.status})`;
+                    }
+                    showAlert(alertDiv, `❌ ${errorMessage}`, 'error');
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentAnalysis = {
+                        analysis: data.analysis,
+                        context: JSON.stringify(dashboardData),
+                        timestamp: data.timestamp,
+                        type: 'Decision Dashboard'
+                    };
+                    resultDiv.className = 'analysis-result';
+                    resultDiv.innerHTML = formatAnalysisHTML(data.analysis) + `
+                        <div style="margin-top: 2.5rem; text-align: center;">
+                            <button class="btn btn-secondary" onclick="downloadPDF()">
+                                <span>📥</span>
+                                <span>Download as PDF</span>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    showAlert(alertDiv, `❌ ${data.error || 'Analysis failed'}`, 'error');
+                }
+            } catch (error) {
+                loadingDiv.classList.add('hidden');
+                showAlert(alertDiv, `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Decision Confidence Meter
+        async function assessConfidence() {
+            const confidenceData = {
+                decision: document.getElementById('confidence-decision').value.trim(),
+                evidence: document.getElementById('confidence-evidence').value.trim(),
+                gaps: document.getElementById('confidence-gaps').value.trim(),
+                timeline: document.getElementById('confidence-timeline').value.trim()
+            };
+
+            const alertDiv = document.getElementById('confidence-alert');
+            const loadingDiv = document.getElementById('confidence-loading');
+            const resultDiv = document.getElementById('confidence-result');
+
+            if (!confidenceData.decision || !confidenceData.evidence) {
+                showAlert(alertDiv, '⚠️ Please provide decision and evidence fields', 'error');
+                return;
+            }
+
+            alertDiv.className = 'hidden';
+            resultDiv.className = 'hidden';
+            loadingDiv.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/analyze-confidence', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(confidenceData)
+                });
+
+                loadingDiv.classList.add('hidden');
+
+                if (!response.ok) {
+                    let errorMessage = 'Analysis failed';
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch {
+                        errorMessage = `Server error (${response.status})`;
+                    }
+                    showAlert(alertDiv, `❌ ${errorMessage}`, 'error');
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentAnalysis = {
+                        analysis: data.analysis,
+                        context: JSON.stringify(confidenceData),
+                        timestamp: data.timestamp,
+                        type: 'Confidence Assessment'
+                    };
+                    resultDiv.className = 'analysis-result';
+                    resultDiv.innerHTML = formatAnalysisHTML(data.analysis) + `
+                        <div style="margin-top: 2.5rem; text-align: center;">
+                            <button class="btn btn-secondary" onclick="downloadPDF()">
+                                <span>📥</span>
+                                <span>Download as PDF</span>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    showAlert(alertDiv, `❌ ${data.error || 'Analysis failed'}`, 'error');
+                }
+            } catch (error) {
+                loadingDiv.classList.add('hidden');
+                showAlert(alertDiv, `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Decision Defense Pack
+        async function generateDefense() {
+            const defenseData = {
+                decision: document.getElementById('defense-decision').value.trim(),
+                rationale: document.getElementById('defense-rationale').value.trim(),
+                tradeoffs: document.getElementById('defense-tradeoffs').value.trim(),
+                risks: document.getElementById('defense-risks').value.trim(),
+                audience: document.getElementById('defense-audience').value.trim()
+            };
+
+            const alertDiv = document.getElementById('defense-alert');
+            const loadingDiv = document.getElementById('defense-loading');
+            const resultDiv = document.getElementById('defense-result');
+
+            if (!defenseData.decision || !defenseData.rationale) {
+                showAlert(alertDiv, '⚠️ Please provide decision and rationale fields', 'error');
+                return;
+            }
+
+            alertDiv.className = 'hidden';
+            resultDiv.className = 'hidden';
+            loadingDiv.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/analyze-defense', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(defenseData)
+                });
+
+                loadingDiv.classList.add('hidden');
+
+                if (!response.ok) {
+                    let errorMessage = 'Analysis failed';
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch {
+                        errorMessage = `Server error (${response.status})`;
+                    }
+                    showAlert(alertDiv, `❌ ${errorMessage}`, 'error');
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentAnalysis = {
+                        analysis: data.analysis,
+                        context: JSON.stringify(defenseData),
+                        timestamp: data.timestamp,
+                        type: 'Decision Defense Pack'
+                    };
+                    resultDiv.className = 'analysis-result';
+                    resultDiv.innerHTML = formatAnalysisHTML(data.analysis) + `
+                        <div style="margin-top: 2.5rem; text-align: center;">
+                            <button class="btn btn-secondary" onclick="downloadPDF()">
+                                <span>📥</span>
+                                <span>Download as PDF</span>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    showAlert(alertDiv, `❌ ${data.error || 'Analysis failed'}`, 'error');
+                }
+            } catch (error) {
+                loadingDiv.classList.add('hidden');
+                showAlert(alertDiv, `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Decision Retrospective
+        async function generateRetrospective() {
+            const retroData = {
+                decision: document.getElementById('retro-decision').value.trim(),
+                expected: document.getElementById('retro-expected').value.trim(),
+                actual: document.getElementById('retro-actual').value.trim(),
+                assumptions: document.getElementById('retro-assumptions').value.trim(),
+                differently: document.getElementById('retro-differently').value.trim()
+            };
+
+            const alertDiv = document.getElementById('retrospective-alert');
+            const loadingDiv = document.getElementById('retrospective-loading');
+            const resultDiv = document.getElementById('retrospective-result');
+
+            if (!retroData.decision || !retroData.expected || !retroData.actual) {
+                showAlert(alertDiv, '⚠️ Please fill in decision, expected, and actual outcome fields', 'error');
+                return;
+            }
+
+            alertDiv.className = 'hidden';
+            resultDiv.className = 'hidden';
+            loadingDiv.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/analyze-retrospective', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(retroData)
+                });
+
+                loadingDiv.classList.add('hidden');
+
+                if (!response.ok) {
+                    let errorMessage = 'Analysis failed';
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorMessage;
+                    } catch {
+                        errorMessage = `Server error (${response.status})`;
+                    }
+                    showAlert(alertDiv, `❌ ${errorMessage}`, 'error');
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentAnalysis = {
+                        analysis: data.analysis,
+                        context: JSON.stringify(retroData),
+                        timestamp: data.timestamp,
+                        type: 'Decision Retrospective'
+                    };
+                    resultDiv.className = 'analysis-result';
+                    resultDiv.innerHTML = formatAnalysisHTML(data.analysis) + `
+                        <div style="margin-top: 2.5rem; text-align: center;">
+                            <button class="btn btn-secondary" onclick="downloadPDF()">
+                                <span>📥</span>
+                                <span>Download as PDF</span>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    showAlert(alertDiv, `❌ ${data.error || 'Analysis failed'}`, 'error');
+                }
+            } catch (error) {
+                loadingDiv.classList.add('hidden');
+                showAlert(alertDiv, `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Helper function to format analysis HTML consistently
+        function formatAnalysisHTML(text) {
+            return text
+                .replace(/^### (.+)$/gm, '<h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem; font-size: 1.3rem;">$1</h3>')
+                .replace(/^## (.+)$/gm, '<h2 style="color: var(--secondary); margin-top: 2.5rem; margin-bottom: 1.25rem; font-size: 1.5rem;">$1</h2>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong style="color: var(--text);">$1</strong>')
+                .replace(/^- (.+)$/gm, '<li style="margin-bottom: 0.75rem; line-height: 1.7;">$1</li>')
+                .replace(/(<li>.*<\/li>)/s, '<ul style="margin: 1rem 0; padding-left: 1.5rem;">$1</ul>')
+                .replace(/\n\n/g, '</p><p style="margin: 1rem 0; line-height: 1.8;">')
+                .replace(/^(.+)$/gm, '<p style="margin: 1rem 0; line-height: 1.8;">$1</p>');
         }
 
         // Initialize page on load

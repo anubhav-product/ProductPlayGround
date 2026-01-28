@@ -299,6 +299,146 @@ Provide 3–5 concrete, actionable steps focused on:
 {user_context}
 """
     
+    def build_walkthrough_prompt(self, user_context: str, walkthrough_data: Dict) -> str:
+        """
+        Build a specialized prompt for walkthrough mode analysis
+        
+        Args:
+            user_context: Combined context from walkthrough steps
+            walkthrough_data: Structured user inputs from walkthrough
+            
+        Returns:
+            Formatted prompt string for walkthrough mode
+        """
+        return f"""
+You are guiding a Product Manager through structured product thinking in Walkthrough Mode.
+
+The user has already done the work to frame their problem and form hypotheses.
+Your job is to BUILD ON their thinking, not replace it.
+
+## User's Own Framing
+
+**Target User:** {walkthrough_data.get('targetUser', 'Not specified')}
+
+**Decision to Make:** {walkthrough_data.get('decision', 'Not specified')}
+
+**Constraints:** {walkthrough_data.get('constraints', 'Not specified')}
+
+**User's Hypotheses about Causes:** {walkthrough_data.get('causes', 'Not specified')}
+
+**User's Success Criteria:** {walkthrough_data.get('success', 'Not specified')}
+
+---
+
+Your response should EXPLICITLY REFERENCE the user's own framing above.
+
+Provide analysis in this structure:
+
+## 🎯 Building on Your Framing
+
+Start by acknowledging what the user got right in their problem framing.
+Then expand on it with:
+- Additional dimensions they might not have considered
+- Clarifications or refinements to their framing
+- What their constraints imply about viable options
+
+## 💡 Exploring Decision Options
+
+Based on their stated decision and constraints, outline 2-3 possible approaches.
+
+For each option, use language like:
+- "One possible approach is..."
+- "This would prioritize... at the expense of..."
+- "A key tradeoff to consider is..."
+
+**For each option:**
+- What it prioritizes (connect to user's success criteria)
+- Key tradeoffs (what you gain vs sacrifice)
+- How it relates to the user's hypotheses
+- Second-order effects to anticipate
+
+## ⚠️ Risk Management
+
+For EACH option above, assess risks:
+
+**User Trust Risk:**
+- Likelihood: Low/Medium/High
+- Impact: Low/Medium/High  
+- Mitigation: Specific strategies
+
+**Delivery / Execution Risk:**
+- Likelihood: Low/Medium/High
+- Impact: Low/Medium/High
+- Mitigation: Specific strategies
+
+**Technical Risk:**
+- Likelihood: Low/Medium/High
+- Impact: Low/Medium/High
+- Mitigation: Specific strategies
+
+**Business / Metrics Risk:**
+- Likelihood: Low/Medium/High
+- Impact: Low/Medium/High
+- Mitigation: Specific strategies
+
+Include: "These risks don't mean you shouldn't proceed—they mean you need visibility and mitigation plans."
+
+## 🎲 Suggested Direction (with Caveats)
+
+Use cautious language:
+- "Based on your constraints, one direction to consider is..."
+- "This assumes that [list key assumptions]"
+- "This would NOT be appropriate if [conditions]"
+
+State explicitly:
+- Key assumptions that must be true
+- Scenarios where this could fail
+- What would change your recommendation
+
+## 🚀 Next Steps
+
+Provide 4-6 concrete, actionable validation steps:
+
+1. **[Action]** - What to do and why
+2. **[Action]** - What to do and why
+3. **[Action]** - What to do and why
+
+Focus on:
+- Learning and validation (not building)
+- Quick experiments to test assumptions
+- Risk mitigation
+- Preserving optionality
+
+## 📊 Success Signals
+
+**Early signals of success (within 2-4 weeks):**
+- [Specific, measurable indicators]
+
+**Warning signs to watch for:**
+- [Specific red flags that should trigger reconsideration]
+
+**Metrics to track:**
+- [Specific KPIs tied to user's success criteria]
+
+---
+
+**CRITICAL TONE REQUIREMENTS:**
+
+❌ DON'T say: "The best choice is...", "You should definitely...", "This will succeed..."
+
+✅ DO say: "One possible approach is...", "A risk to consider is...", "If X is true, then Y might make sense..."
+
+Remember: The user has done their own thinking. Your job is to:
+1. Validate and expand their thinking
+2. Surface risks and tradeoffs they might miss
+3. Provide structure for their decision
+4. Acknowledge uncertainty
+5. Keep ownership of the decision with them
+
+**Full Context:**
+{user_context}
+"""
+    
     def analyze(self, user_context: str) -> str:
         """
         Analyze the product situation and return insights
@@ -349,6 +489,51 @@ You help PMs navigate complex decisions with clarity, avoiding false certainty w
         )
         
         # Extract and return the response
+        return response.choices[0].message.content
+    
+    def analyze_walkthrough(self, user_context: str, walkthrough_data: Dict) -> str:
+        """
+        Analyze a product challenge in walkthrough mode with guided steps
+        
+        Args:
+            user_context: The combined context from walkthrough steps
+            walkthrough_data: Dictionary with structured walkthrough inputs
+            
+        Returns:
+            Strategic analysis tailored for walkthrough mode
+        """
+        prompt = self.build_walkthrough_prompt(user_context, walkthrough_data)
+        
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": """You are an elite AI Product Thinking coach in Walkthrough Mode.
+
+Your role is to guide structured product thinking, NOT to provide final answers upfront.
+
+Key principles for Walkthrough Mode:
+- Reference the user's own context and hypotheses explicitly
+- Use cautious, decision-support language ("One possible approach is...", "A risk to consider is...")
+- Avoid "best choice", numerical scores, or rigid rankings
+- Emphasize tradeoffs over definitive answers
+- Make risks and assumptions visible
+- Remind users that final judgment remains with them
+
+Structure your response to support learning and critical thinking."""
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            temperature=self.temperature,
+            max_tokens=self.max_tokens,
+            presence_penalty=0.1,
+            frequency_penalty=0.1
+        )
+        
         return response.choices[0].message.content
     
     def validate_context(self, user_context: str) -> Dict[str, any]:
@@ -421,53 +606,68 @@ You help PMs navigate complex decisions with clarity, avoiding false certainty w
         Returns:
             Comprehensive product teardown analysis
         """
+        import httpx
+        
         prompt = self.build_website_teardown_prompt(website_url, additional_context)
         
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=[
-                {
-                    "role": "system",
-                    "content": """You are an elite Product Strategy Consultant and former VP of Product at multiple unicorn companies (Stripe, Airbnb, Notion-level). You've conducted over 500 product teardowns for Fortune 500 companies, top-tier VC firms (a16z, Sequoia), and PE funds performing due diligence.
+        try:
+            # Create custom HTTP client with extended timeout
+            http_client = httpx.Client(timeout=120.0)
+            
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": """You are a senior Product Strategy Consultant specializing in comprehensive product teardowns.
 
-Your unique expertise:
-- **Strategic Pattern Recognition**: You identify non-obvious strategic patterns that most PMs miss
-- **Market Dynamics**: Deep understanding of TAM, SAM, SOM, competitive moats, and market timing
-- **Business Model Innovation**: Expert in SaaS metrics, unit economics, pricing psychology, and monetization strategies
-- **Customer Psychology**: Master of Jobs-to-be-Done, behavioral economics, and decision-making frameworks
-- **Competitive Intelligence**: Skilled at reverse-engineering strategy from public signals
-- **Risk Assessment**: Identify both obvious and hidden strategic risks with second and third-order effects
-- **Execution Realism**: Understand what's feasible vs aspirational based on company stage and resources
+Analyze with depth and precision:
+- Extract insights from observable product signals
+- Identify strategic patterns and competitive positioning  
+- Assess risks with second-order implications
+- Deliver actionable, high-value recommendations
 
-Your analytical methodology:
-1. **Evidence-Based**: Every insight must be grounded in specific, observable signals from the website
-2. **Multi-Layered**: Analyze surface messages AND what's revealed through omission, emphasis, and structure
-3. **Contextual**: Consider industry norms, competitive landscape, and market maturity
-4. **Skeptical**: Question assumptions, identify weak signals, call out vague or missing information
-5. **Actionable**: Provide insights that lead to clear strategic decisions, not just observations
-6. **Nuanced**: Acknowledge tradeoffs, edge cases, and scenarios where your analysis might be wrong
-
-Your writing style:
-- **Specific over generic**: Use concrete examples, not platitudes
-- **Insightful over obvious**: Go beyond what anyone could see - add real analytical value
-- **Structured clarity**: Organize complex ideas into digestible frameworks
-- **Professional precision**: Write like you're briefing a CEO or board - every word counts
-- **Confident humility**: Strong opinions, loosely held - state confidence levels explicitly
-
-You produce teardowns that would be worth $50K+ if sold as a consulting deliverable."""
-                },
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ],
-            temperature=0.8,
-            max_tokens=6000,
-            presence_penalty=0.15,
-            frequency_penalty=0.15
-        )
-        
-        return response.choices[0].message.content
+Be thorough yet concise. Every insight must be unique and valuable."""
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                temperature=0.75,
+                max_tokens=6000,
+                presence_penalty=0.3,
+                frequency_penalty=0.3
+            )
+            
+            if not response or not response.choices:
+                raise Exception("Empty response from AI service")
+            
+            content = response.choices[0].message.content
+            
+            if not content or len(content.strip()) < 100:
+                raise Exception("Generated analysis was too short or empty")
+            
+            # Check if response was truncated
+            if response.choices[0].finish_reason == "length":
+                content += "\n\n---\n**Note**: Analysis reached token limit. Key insights captured above."
+            
+            return content
+            
+        except Exception as e:
+            error_msg = str(e)
+            print(f"ERROR in analyze_website: {error_msg}")
+            import traceback
+            traceback.print_exc()
+            
+            if "timeout" in error_msg.lower() or "timed out" in error_msg.lower():
+                raise Exception("Analysis timeout - the website may be too complex. Please try again.")
+            elif "rate_limit" in error_msg.lower():
+                raise Exception("API rate limit reached. Please wait a moment and try again.")
+            elif "api_key" in error_msg.lower():
+                raise Exception("API authentication failed. Please check your API key configuration.")
+            else:
+                raise Exception(f"Analysis failed: {error_msg}")
     
     def build_website_teardown_prompt(self, website_url: str, additional_context: str) -> str:
         """
@@ -881,3 +1081,1033 @@ Examples:
 
 **Remember**: This analysis will inform major strategic decisions. Make every section count. If you're writing something that could apply to ANY product, delete it and write something specifically insightful about THIS product.
 """
+
+    def analyze_decision_framing(self, framing_data: Dict) -> str:
+        """
+        Clarify and refine decision framing
+        
+        Args:
+            framing_data: Dictionary containing decision framing inputs
+            
+        Returns:
+            Clarified decision frame analysis
+        """
+        prompt = f"""You are a decision architecture expert helping to clarify what decision is actually being made.
+
+**User's Decision Statement:**
+{framing_data.get('decision', '')}
+
+**Stakeholders:**
+{framing_data.get('stakeholders', 'Not specified')}
+
+**Options on the Table:**
+{framing_data.get('options', 'Not specified')}
+
+**Constraints:**
+{framing_data.get('constraints', 'Not specified')}
+
+**Success Signals:**
+{framing_data.get('success', 'Not specified')}
+
+**Key Unknowns & Risks:**
+{framing_data.get('unknowns', 'Not specified')}
+
+---
+
+Please provide a comprehensive, senior-level decision frame analysis with:
+
+## 🎯 Clarified Decision Statement
+
+Restate the decision in clear, specific terms:
+- **What exactly is being decided?** (Be precise - not "should we build X" but "should we commit Y resources to build X by Z date")
+- **Who has decision authority?** (Individual, committee, needs escalation?)
+- **When must this be decided?** (Hard deadline, soft deadline, ongoing?)
+- **What triggers action?** (What happens after deciding yes vs no?)
+
+**Precision check:** Could someone unfamiliar with context understand exactly what's being decided? If not, refine further.
+
+## 🔍 What This Decision Is Really About
+
+Look beneath the surface to identify the deeper strategic question:
+- **Surface decision:** [What they stated]
+- **Underlying tension:** [What's really at stake - e.g., resource allocation, strategic direction, competitive positioning]
+- **Why now?** What's forcing this decision at this moment? (Market pressure, internal trigger, opportunity window?)
+- **Second-order implications:** What future decisions does this enable or foreclose?
+
+**Strategic context:** How does this fit into the broader product/company strategy? Is this a bet on a new direction or doubling down on current path?
+
+## 👥 Stakeholder Landscape & Power Dynamics
+
+### Decision Makers (Formal Authority)
+- **Ultimate decision maker:** [Name/role]
+- **Required sign-offs:** [Who must approve]
+- **Veto power:** [Who can block this]
+
+### Influencers (No Formal Authority but High Impact)
+- **Internal champions:** [Who will advocate for different options]
+- **Skeptics/blockers:** [Who might resist, and why]
+- **Domain experts:** [Whose input is critical]
+
+### Impacted Parties
+- **Directly affected:** [Teams, customers, partners who experience immediate impact]
+- **Indirectly affected:** [Those affected by cascading consequences]
+
+### Alignment Requirements
+- **Must be aligned before decision:** [Critical stakeholders who need buy-in first]
+- **Can be informed after:** [Those who need to know but don't influence decision]
+- **Potential conflicts:** [Where stakeholder interests diverge and how to navigate]
+
+**Power map insight:** Who has the most to gain/lose? Where are the hidden incentives that might influence positions?
+
+## ⚖️ The Real Options (Including Hidden Alternatives)
+
+### Stated Options
+**Option A: [Name]**
+- **Description:** [What this entails]
+- **Resources required:** [Time, money, people]
+- **Reversibility:** [Easy/Hard/Impossible to undo]
+- **Risks:** [What could go wrong]
+- **Upside:** [Best-case scenario]
+
+**Option B: [Name]**
+[Same structure]
+
+### Unconsidered Alternatives
+**Option C: [Hidden/Hybrid approach]**
+- **Why this wasn't mentioned:** [Assumption blocking it]
+- **How it differs:** [What makes this distinct]
+- **Worth exploring?** [Yes/No and why]
+
+### The "Do Nothing" Baseline
+- **What happens if we don't decide?** [Natural drift, status quo consequences]
+- **Is "do nothing" actually an option?** [Or does indecision = default to something]
+- **Opportunity cost:** [What we miss by not acting]
+
+**Decision tree insight:** Are these really mutually exclusive options, or could we phase/combine them?
+
+## 🔒 Binding Constraints (Real vs Assumed)
+
+### Hard Constraints (Unchangeable)
+- **[Constraint 1]:** [Why it's immovable - e.g., regulatory requirement, physics, contract]
+- **[Constraint 2]:** [Why it's immovable]
+
+### Soft Constraints (Changeable with Effort)
+- **[Constraint 1]:** [What it would take to change this - e.g., budget reallocation, timeline extension]
+- **[Constraint 2]:** [What it would take to change]
+
+### Assumed Constraints (May Not Be Real)
+- **[Assumption 1]:** [Why we believe this is a constraint]
+  - **Challenge:** [What if this isn't actually true?]
+  - **How to test:** [Quick way to validate]
+- **[Assumption 2]:** [Why we believe this]
+  - **Challenge:** [What if this isn't actually true?]
+  - **How to test:** [Quick way to validate]
+
+**Constraint audit:** Which "constraints" are actually just historical habits or unexamined assumptions?
+
+## ✅ What "Good" Looks Like (Success Definition)
+
+### Measurable Outcomes (3-6 months)
+- **Metric 1:** [Specific target] - Why this matters
+- **Metric 2:** [Specific target] - Why this matters
+- **Metric 3:** [Specific target] - Why this matters
+
+### Observable Signals (What you'd see happening)
+- **User behavior:** [What users would do differently]
+- **Team dynamics:** [How work would change]
+- **Market response:** [External validation]
+
+### Leading Indicators (Early signs of success/failure)
+- **Week 1-2:** [What should be visible immediately]
+- **Month 1:** [What should be visible in first month]
+- **Month 3:** [What should be visible by quarter]
+
+**Failure definition:** What would indicate this was the wrong decision? Be specific about red flags.
+
+## ❓ Critical Unknowns (Ranked by Impact & Learn-ability)
+
+### High Impact, Easy to Learn (DO THESE FIRST)
+1. **[Unknown 1]**
+   - **Why it matters:** [Impact if assumption is wrong]
+   - **How to learn:** [Specific, cheap test]
+   - **Timeline:** [How long to get answer]
+
+### High Impact, Hard to Learn (BIGGEST RISK)
+1. **[Unknown 1]**
+   - **Why it matters:** [Impact if assumption is wrong]
+   - **Why it's hard:** [What makes this difficult to validate]
+   - **Best proxy:** [Closest thing we can measure]
+
+### Low Impact (DEPRIORITIZE)
+- [List unknowns that don't materially affect the decision]
+
+**De-risking sequence:** What's the optimal order to resolve uncertainties to maximize learning per dollar/hour spent?
+
+## ⚠️ What Could Make This Decision Irrelevant
+
+### External Disruptors
+- **Market shifts:** [What market change would moot this?]
+- **Competitive moves:** [What could a competitor do?]
+- **Technology change:** [What tech advancement would change the game?]
+- **Regulatory change:** [What policy shift would matter?]
+
+### Internal Disruptors
+- **Strategy pivot:** [What internal decision would supersede this?]
+- **Resource constraints:** [What budget/people change would block this?]
+- **Leadership change:** [How dependent is this on current leadership?]
+
+**Resilience check:** How robust is this decision to foreseeable disruptions? Is it adaptable or brittle?
+
+## 🎯 Decision Readiness Assessment
+
+### What's Clear
+- [List elements that are well-understood and stable]
+
+### What's Uncertain But Acceptable
+- [List unknowns that won't materially change the decision]
+
+### What's Uncertain And Critical
+- [List gaps that should be filled before deciding]
+
+**Recommendation on timing:** 
+- ✅ **Ready to decide** if [conditions]
+- ⏸️ **Wait and learn** if [conditions]
+- 🔄 **Reframe the decision** if [conditions]
+
+---
+
+**CRITICAL QUALITY STANDARDS:**
+- Write at the level of a senior product leader presenting to executives
+- Be specific and concrete - no generic platitudes
+- Challenge assumptions explicitly
+- Identify what's NOT being said but should be
+- Frame with strategic nuance - acknowledge complexity
+- Use clear, professional language - no jargon without explanation
+
+**Remember:** The goal is clarity and rigor before analysis, not recommendations. Help them understand what they're actually deciding with the depth expected in a senior-level strategic brief.
+"""
+        
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": "You are a senior product strategy advisor and decision framing expert. Provide executive-level analysis with the depth and rigor expected in Fortune 500 strategic planning."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=5000
+        )
+        
+        return response.choices[0].message.content
+
+    def analyze_decision_dashboard(self, dashboard_data: Dict) -> str:
+        """
+        Analyze what signals suggest is going wrong
+        
+        Args:
+            dashboard_data: Dictionary containing problem description and data
+            
+        Returns:
+            Dashboard signal analysis
+        """
+        prompt = f"""You are a product diagnostics expert. Your job is to help understand what signals suggest is going wrong and form competing hypotheses.
+
+**What Appears to be Going Wrong:**
+{dashboard_data.get('problem', '')}
+
+**Supporting Data:**
+{dashboard_data.get('data', 'Not provided')}
+
+**Timeline & Context:**
+{dashboard_data.get('context', 'Not provided')}
+
+---
+
+Provide a comprehensive diagnostic analysis with:
+
+## 📉 Signal Summary & Pattern Recognition
+
+### What the Data Is Telling Us
+Translate the signals into clear, executive-friendly language:
+- **Primary pattern observed:** [Main trend or anomaly]
+- **Magnitude of change:** [How significant is this deviation from baseline?]
+- **Velocity:** [Is this accelerating, stable, or decelerating?]
+- **Consistency:** [Is this signal consistent across segments/cohorts/time periods?]
+
+### Visual Pattern Description
+Describe what someone looking at the data would see:
+- **Shape of the curve:** [Sudden drop, gradual decline, plateauing, etc.]
+- **Outliers or anomalies:** [Any data points that don't fit the pattern]
+- **Correlation with events:** [Does timing align with product changes, market events, seasonality?]
+
+### Signal Strength Assessment
+- **🔴 Strong Signal:** Clear, consistent, significant deviation requiring attention
+- **🟡 Moderate Signal:** Noticeable pattern but with confounding factors
+- **🟢 Weak Signal:** Could be noise, variance, or early indication
+
+**Current assessment:** [Which category and why]
+
+## 🔍 Competing Hypotheses (Diagnostic Framework)
+
+Generate 4-6 distinct explanations, ranked by likelihood:
+
+### Hypothesis 1: [Descriptive Name - e.g., "User Activation Bottleneck"]
+**Likelihood: High/Medium/Low**
+
+**Core Claim:**
+[One-sentence statement of what you think is happening]
+
+**What This Would Explain:**
+- [Signal 1 this accounts for]
+- [Signal 2 this accounts for]
+- [Signal 3 this accounts for]
+
+**What This Would NOT Explain:**
+- [Aspect of the data this doesn't account for]
+- [Conflicting evidence]
+
+**Supporting Evidence:**
+- [Data point 1 that supports this]
+- [Data point 2 that supports this]
+- [External factor that makes this plausible]
+
+**Contradicting Evidence:**
+- [Data point that weakens this hypothesis]
+- [Why this might be less likely than it appears]
+
+**How to Test This:**
+- **Quick test (days):** [Simple validation approach]
+- **Rigorous test (weeks):** [More comprehensive validation]
+- **Key metric to watch:** [What would move if this hypothesis is true]
+
+**If This Is True, Then...**
+- **Implication 1:** [What this means for product strategy]
+- **Implication 2:** [What this means for roadmap]
+- **Urgency:** [How quickly this needs to be addressed]
+
+---
+
+### Hypothesis 2: [Descriptive Name]
+[Same complete structure as Hypothesis 1]
+
+---
+
+### Hypothesis 3: [Descriptive Name]
+[Same complete structure]
+
+---
+
+### Hypothesis 4: [Descriptive Name]
+[Same complete structure]
+
+---
+
+## 📊 What the Data Shows vs What We're Inferring
+
+### Hard Facts (High Confidence)
+**From the data, we can confidently say:**
+- [Fact 1: Specific observation with numbers]
+- [Fact 2: Specific observation with numbers]
+- [Fact 3: Specific observation with numbers]
+
+**Confidence level:** 90%+ - These are direct observations with minimal interpretation
+
+### Reasonable Inferences (Medium Confidence)
+**We can reasonably infer:**
+- [Inference 1: Pattern suggesting X]
+- [Inference 2: Correlation suggesting Y]
+- [Inference 3: Trend suggesting Z]
+
+**Confidence level:** 60-80% - These require some interpretation but are well-supported
+**Assumption risk:** [What would make these inferences wrong]
+
+### Speculative Interpretations (Low Confidence)
+**We might speculate:**
+- [Speculation 1: Possible explanation]
+- [Speculation 2: Possible explanation]
+
+**Confidence level:** <50% - These are hypotheses requiring validation
+**Why uncertain:** [What's missing to increase confidence]
+
+### Critical Data Gaps
+**What's Missing That Would Help:**
+1. **[Data type 1]:** Why it matters, how hard to get
+2. **[Data type 2]:** Why it matters, how hard to get
+3. **[Data type 3]:** Why it matters, how hard to get
+
+**Prioritization:** Which gaps to fill first based on impact vs effort
+
+## 🚩 Signal vs Noise Assessment
+
+### Likely Meaningful Signals
+**These indicators warrant attention:**
+- **[Signal 1]:** Why this is probably real (consistency, magnitude, timing)
+- **[Signal 2]:** Why this is probably real
+- **[Signal 3]:** Why this is probably real
+
+**Combined weight:** When multiple signals point same direction, confidence increases
+
+### Possible Noise / Natural Variance
+**These might be statistical fluctuation:**
+- **[Metric 1]:** Why this could be random (sample size, seasonality, measurement error)
+- **[Metric 2]:** Why this could be random
+
+**Variance check:** What's the normal range for these metrics? Is this within 1-2 standard deviations?
+
+### Factors That Would Increase Confidence
+- **Time:** [How long to observe to confirm pattern]
+- **Replication:** [What consistency across segments would confirm]
+- **Leading indicators:** [What upstream metrics should also move]
+
+### Factors That Would Decrease Confidence
+- **Alternative explanations:** [What else could cause this]
+- **Data quality issues:** [Known measurement problems]
+- **External events:** [One-time occurrences that could skew data]
+
+## ⚠️ Risks of Acting Too Quickly (Premature Optimization)
+
+### Type I Error Risk: Acting on False Positive
+**If we react and this is just noise:**
+- **Resource cost:** [Wasted effort, diverted attention]
+- **Opportunity cost:** [What we don't do instead]
+- **Team morale:** [Whiplash from constant direction changes]
+- **Strategic cost:** [Optimizing wrong thing, losing focus]
+
+**Example scenario:** [Concrete example of how this could go wrong]
+
+### Type II Error Risk: Ignoring Real Problem
+**If we don't react and this is a real issue:**
+- **Escalation:** [How much worse this could get]
+- **Recovery cost:** [Harder to fix later than now]
+- **Competitive risk:** [What competitors might do]
+- **User trust:** [How this affects perception]
+
+**Example scenario:** [Concrete example of cost of inaction]
+
+### Balanced Approach
+**Low-cost validation steps:**
+- [Action 1: Small test that reduces uncertainty]
+- [Action 2: Observation that provides more data]
+- [Action 3: Reversible change that tests hypothesis]
+
+**Escalation triggers:** What evidence would justify bigger action?
+
+## 🔄 What to Watch Next (Monitoring Plan)
+
+### Primary Metrics (Check Daily/Weekly)
+- **[Metric 1]:** Current value, threshold for concern, why it matters
+- **[Metric 2]:** Current value, threshold for concern, why it matters
+- **[Metric 3]:** Current value, threshold for concern, why it matters
+
+### Secondary Metrics (Check Weekly/Monthly)
+- **[Metric 1]:** What this confirms/refutes
+- **[Metric 2]:** What this confirms/refutes
+
+### Leading Indicators (Early Warning)
+- **[Metric 1]:** What this predicts
+- **[Metric 2]:** What this predicts
+
+### Cohort/Segment Analysis
+- **Which segments to track separately:** [Why certain segments matter more]
+- **What differences would be meaningful:** [What variance would change interpretation]
+
+### Decision Checkpoints
+**Week 1:** Review [specific metrics] - Decision: Continue monitoring vs escalate
+**Week 4:** Review [specific metrics] - Decision: Maintain course vs adjust
+**Month 3:** Review [specific metrics] - Decision: Validate hypothesis vs pivot
+
+## 🎯 Recommended Diagnostic Sequence
+
+**Phase 1: Validate Signal (1-2 weeks)**
+1. [Specific action to confirm data quality]
+2. [Specific action to rule out external factors]
+3. [Specific action to test primary hypothesis]
+
+**Phase 2: Narrow Hypotheses (2-4 weeks)**
+1. [Test that would confirm/refute Hypothesis 1]
+2. [Test that would confirm/refute Hypothesis 2]
+3. [Data gathering to fill critical gaps]
+
+**Phase 3: Targeted Action (if warranted)**
+1. [Smallest intervention that would improve situation]
+2. [Measurement plan to assess impact]
+3. [Rollback plan if ineffective]
+
+---
+
+**CRITICAL QUALITY STANDARDS:**
+- Use probabilistic language ("appears to," "suggests," "could indicate," "one explanation might be")
+- Distinguish clearly between observation and interpretation
+- Acknowledge uncertainty explicitly
+- Provide specific, actionable next steps
+- Write at senior PM/exec level - rigorous but accessible
+- Avoid false precision (no spurious confidence percentages unless backed by stats)
+
+**Remember:** The goal is to illuminate possibilities and structure thinking, not claim certainty. Good diagnostics expand the hypothesis space before narrowing it.
+"""
+        
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": "You are a senior product analytics and diagnostics expert. Provide rigorous, hypothesis-driven analysis that helps product leaders make evidence-based decisions."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=6000
+        )
+        
+        return response.choices[0].message.content
+
+    def analyze_decision_confidence(self, confidence_data: Dict) -> str:
+        """
+        Assess decision confidence level
+        
+        Args:
+            confidence_data: Dictionary containing decision and evidence
+            
+        Returns:
+            Confidence assessment
+        """
+        prompt = f"""You are a decision confidence assessor. Your job is to qualitatively evaluate whether there's enough signal to act.
+
+**Decision Being Considered:**
+{confidence_data.get('decision', '')}
+
+**Evidence Supporting This:**
+{confidence_data.get('evidence', '')}
+
+**Gaps & Uncertainties:**
+{confidence_data.get('gaps', 'Not specified')}
+
+**Decision Timeline:**
+{confidence_data.get('timeline', 'Not specified')}
+
+---
+
+Provide a comprehensive, qualitative confidence assessment:
+
+## ⚡ Overall Signal Strength Assessment
+
+Characterize the evidence quality and decision readiness. Select ONE level that best fits:
+
+### 🟢 Strong Signal - HIGH CONFIDENCE (Actionable)
+**Characteristics of strong signal:**
+- Multiple independent sources of evidence converge on same conclusion
+- Key assumptions have been tested with real data/users
+- Downside is bounded and manageable even if partially wrong
+- Waiting longer would not materially improve decision quality
+- Cost of delay exceeds cost of being wrong
+- Reversibility is possible if needed
+
+**What this means for action:**
+- Proceed with conviction but maintain monitoring
+- Allocate resources confidently
+- Communicate decision with clarity
+- Plan for course-correction if needed
+
+---
+
+### 🟡 Emerging Signal - MODERATE CONFIDENCE (Promising but Incomplete)
+**Characteristics of emerging signal:**
+- Some solid evidence exists but with gaps in coverage
+- A few key assumptions tested, others remain unvalidated
+- Could go either way with additional information
+- Uncertainty is material but not fatal
+- More research would likely improve decision quality
+- Timeline allows for some additional validation
+
+**What this means for action:**
+- Consider phased approach or pilot
+- Invest in validation before full commitment
+- Set clear decision checkpoints
+- Build in flexibility to adjust course
+- Communicate with appropriate caveats
+
+---
+
+### 🔴 Weak Signal - LOW CONFIDENCE (Not Ready)
+**Characteristics of weak signal:**
+- Evidence is sparse, contradictory, or unreliable
+- Most critical assumptions remain untested
+- High stakes if wrong, limited ability to recover
+- Major gaps in understanding key dynamics
+- Decision feels premature given what's known
+- Substantial additional research would materially improve quality
+
+**What this means for action:**
+- Do NOT proceed with major commitment
+- Invest in de-risking and learning first
+- Question whether decision can be deferred
+- Consider smaller experiments to gain data
+- Communicate that more work is needed
+
+---
+
+**YOUR ASSESSMENT:** [Which category applies and why - be specific about which criteria are met/not met]
+
+## 📋 Evidence Quality & Reliability Review
+
+### Source Reliability Assessment
+**Primary Evidence Sources:**
+
+**Source 1: [Type - e.g., "User interviews," "Usage analytics," "Market research"]**
+- **Reliability:** High / Medium / Low
+- **Why:** [Firsthand data, large sample, methodologically sound] OR [Hearsay, small sample, potential bias]
+- **Recency:** [How current is this information]
+- **Representativeness:** [Does this cover the right users/segments/scenarios]
+- **Weight in decision:** [How much should this influence the call]
+
+**Source 2: [Type]**
+[Same structure]
+
+**Source 3: [Type]**
+[Same structure]
+
+### Evidence Quality Dimensions
+
+**Breadth of Coverage:**
+- ✅ **Covered:** [Which aspects/segments/scenarios have data]
+- ❌ **Not Covered:** [Which aspects/segments/scenarios lack data]
+- **Impact:** [How much does lack of breadth matter]
+
+**Depth of Understanding:**
+- **Surface-level:** [What we know at high level]
+- **Detailed:** [Where we have deep understanding]
+- **Missing detail:** [Where depth would help]
+
+**Temporal Coverage:**
+- **Point-in-time:** [Snapshot data]
+- **Longitudinal:** [Trends over time]
+- **Predictive:** [Leading indicators of future state]
+- **Gap:** [What time horizon is missing]
+
+### Bias & Limitation Assessment
+
+**Potential Biases:**
+1. **[Selection bias / Confirmation bias / Recency bias / etc.]**
+   - **How it manifests:** [Specific way this could skew evidence]
+   - **Severity:** High / Medium / Low
+   - **Mitigation:** [How to account for this]
+
+2. **[Another bias]**
+   [Same structure]
+
+**Data Quality Issues:**
+- **Measurement error:** [Any known instrumentation problems]
+- **Sample size:** [Is N large enough to be confident]
+- **Confounding factors:** [Other variables that could explain the signal]
+
+**Known Limitations:**
+- [Limitation 1: What this evidence CAN'T tell us]
+- [Limitation 2: What this evidence CAN'T tell us]
+
+## ❓ Critical Gaps That Matter Most
+
+Rank gaps by impact on decision quality:
+
+### Tier 1: Must-Have (Deal-Breakers)
+**Gap 1: [Specific unknown]**
+- **Why this matters:** [How this could change the decision]
+- **Current assumption:** [What we're assuming in absence of data]
+- **Risk if wrong:** [Consequence of bad assumption]
+- **How to fill:** [Specific approach to get this data]
+- **Effort:** [Days/weeks/months + cost]
+- **Timeline:** [How long this takes to learn]
+
+**Gap 2: [Specific unknown]**
+[Same structure]
+
+### Tier 2: Important (Should-Have)
+**Gap 1: [Specific unknown]**
+- **Why this matters:** [Improves decision but not fatal if missing]
+- **Workaround:** [How to proceed without this]
+- **How to fill:** [Approach to get this data]
+
+**Gap 2: [Specific unknown]**
+[Same structure]
+
+### Tier 3: Nice-to-Have (Incrementally Helpful)
+- [Gap that would add confidence but is low-priority]
+- [Gap that would add confidence but is low-priority]
+
+**Prioritization Logic:** Which gaps to fill in what order, given time/resource constraints
+
+## 🎯 Confidence-Building Pathway
+
+Specific actions to strengthen the signal:
+
+### Quick Wins (Can Execute in Days/Weeks)
+1. **[Action 1]**
+   - **What you'd learn:** [Specific question this answers]
+   - **Effort:** [Hours/days required]
+   - **Impact on confidence:** [How much this helps]
+   - **Method:** [Specific approach - e.g., "Interview 5 users from segment X"]
+
+2. **[Action 2]**
+   [Same structure]
+
+3. **[Action 3]**
+   [Same structure]
+
+### Medium-Term Efforts (Weeks to Months)
+1. **[Action 1]**
+   - **What you'd learn:** [Specific question this answers]
+   - **Effort:** [Weeks/months required]
+   - **Impact on confidence:** [How much this helps]
+   - **Method:** [Specific approach - e.g., "Run controlled pilot with cohort"]
+
+2. **[Action 2]**
+   [Same structure]
+
+### Learn-By-Doing (Can Only Know After Acting)
+- **[Aspect 1]:** [What you can only learn through execution]
+- **[Aspect 2]:** [What you can only learn through execution]
+- **Implication:** [What this means for approach - phased rollout, built-in checkpoints, etc.]
+
+## ⏱️ Confidence vs Timeline Trade-off Analysis
+
+### Decision Timeline
+- **Hard deadline:** [If applicable - regulatory, competitive, etc.]
+- **Soft deadline:** [Preferred decision date]
+- **Cost of delay:** [What happens if we wait - opportunity cost, competitive risk, etc.]
+- **Available time:** [Days/weeks/months until decision needed]
+
+### What's Possible in Available Time
+- **If we have [X time]:** [Which gaps can be filled]
+- **If we have [Y time]:** [Which gaps can be filled]
+- **If we need to decide today:** [What we go with]
+
+### Trade-off Framing
+**Option A: Decide Now with Current Evidence**
+- **Pro:** [Speed to market, first-mover, etc.]
+- **Con:** [Higher uncertainty, risk of wrong call]
+- **Best if:** [Conditions where speed matters more than certainty]
+
+**Option B: Delay to Improve Evidence**
+- **Pro:** [Higher confidence, better decision quality]
+- **Con:** [Missed opportunity, competitive disadvantage]
+- **Best if:** [Conditions where getting it right matters more than speed]
+
+**Option C: Phased Approach with Learning**
+- **Pro:** [Balance speed and learning]
+- **Con:** [Complexity, longer total timeline]
+- **Best if:** [Conditions where reversibility is possible]
+
+### Time-Boxed Learning Plan
+Given available time, optimal sequence:
+1. **[Week/Month 1]:** [Highest-priority gap to fill]
+2. **[Week/Month 2]:** [Next-priority gap]
+3. **[Decision checkpoint]:** [Evaluate evidence, make go/no-go/iterate call]
+
+## ⚠️ Risk Assessment
+
+### Downside Risk (What if we're wrong?)
+**If decision fails:**
+- **Resource loss:** [Wasted time/money/people]
+- **Opportunity cost:** [What we didn't do instead]
+- **Reputation/trust:** [Internal/external credibility impact]
+- **Reversibility:** [Can we undo this? How hard/costly?]
+- **Recovery time:** [How long to get back to neutral]
+
+**Severity:** High / Medium / Low
+**Manageability:** [Can we limit downside through design?]
+
+### Upside Potential (What if we're right?)
+**If decision succeeds:**
+- **Business impact:** [Revenue, growth, efficiency gains]
+- **Strategic position:** [Market position, competitive advantage]
+- **Learning value:** [What we gain even if only partially successful]
+- **Optionality:** [Future opportunities this enables]
+
+**Magnitude:** High / Medium / Low
+
+### Asymmetric Payoff Analysis
+- **Expected value framing:** [Upside × probability vs Downside × probability]
+- **Convex/Concave:** [Are returns linear or non-linear?]
+- **Portfolio view:** [How does this fit with other bets?]
+
+## 🧠 Final Judgment & Recommendation
+
+### Confidence Characterization
+"You have **[strong/emerging/weak] evidence** for a decision that:
+- **Stakes:** [High/Medium/Low - what's at risk]
+- **Timeline:** [Urgent/Normal/Flexible - when decision needed]
+- **Reversibility:** [Easy/Hard/Impossible - can you course-correct]
+- **Opportunity:** [Large/Moderate/Small - upside potential]
+
+The central question is whether **[specific key uncertainty]** is acceptable given **[timeline pressure / stakes / strategic importance]**."
+
+### Recommendation on Decision Readiness
+
+**✅ PROCEED** if:
+- [Condition 1]
+- [Condition 2]
+- [Condition 3]
+
+**⏸️ PAUSE & LEARN** if:
+- [Condition 1]
+- [Condition 2]
+- [Condition 3]
+
+**🔄 REFRAME DECISION** if:
+- [Condition 1]
+- [Condition 2]
+- [Condition 3]
+
+### Next Best Action
+[Specific, concrete next step - not "gather more data" but "Interview 10 users from segment X about behavior Y by date Z"]
+
+---
+
+**CRITICAL QUALITY STANDARDS:**
+- NO percentages, scores, or numerical confidence ratings
+- Qualitative assessment supporting human judgment
+- Explicit about what's known vs unknown vs unknowable
+- Honest about uncertainty without paralyzing decision-making
+- Senior PM/executive level analysis - rigorous but actionable
+- Balance between thorough analysis and clarity
+
+**Remember:** Confidence assessment is about helping leaders understand what they're betting on, not providing algorithmic certainty. The goal is informed judgment, not false precision.
+"""
+        
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": "You are a senior product strategy advisor specializing in decision confidence assessment. Help leaders understand the strength of their evidence and make informed risk-adjusted decisions."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=6000
+        )
+        
+        return response.choices[0].message.content
+
+    def generate_decision_defense(self, defense_data: Dict) -> str:
+        """
+        Generate decision defense brief for stakeholders
+        
+        Args:
+            defense_data: Dictionary containing decision details
+            
+        Returns:
+            Executive-friendly defense brief
+        """
+        prompt = f"""You are an executive communication expert. Create a clear, compelling brief to defend a decision to stakeholders.
+
+**Decision Made:**
+{defense_data.get('decision', '')}
+
+**Rationale:**
+{defense_data.get('rationale', '')}
+
+**Tradeoffs Considered:**
+{defense_data.get('tradeoffs', 'Not specified')}
+
+**Known Risks:**
+{defense_data.get('risks', 'Not specified')}
+
+**Target Audience:**
+{defense_data.get('audience', 'General stakeholders')}
+
+---
+
+Create an executive-friendly decision defense brief:
+
+## 📋 Executive Summary (3-4 sentences)
+The decision, the why, and the expected outcome in plain language. Make it email-ready.
+
+## 🎯 Decision Statement
+Clear, one-sentence statement of what was decided.
+
+## 💡 Why This Decision
+Explain the rationale in terms of:
+- Business impact
+- User/customer benefit  
+- Strategic alignment
+- Opportunity cost of alternatives
+
+## ⚖️ Tradeoffs Evaluated
+Present the options considered and why this path was chosen:
+
+| Option | Pros | Cons | Why Chosen/Not Chosen |
+|--------|------|------|-----------------------|
+| [This decision] | ... | ... | ✓ Selected because... |
+| [Alternative 1] | ... | ... | ✗ Rejected because... |
+| [Alternative 2] | ... | ... | ✗ Rejected because... |
+
+## 🚨 Risks & Mitigation
+Be honest about what could go wrong:
+
+**Risk 1: [Name]**
+- Impact if it happens: [High/Medium/Low]
+- Likelihood: [Our assessment]
+- Mitigation plan: [What we're doing]
+
+[Continue for each risk]
+
+## ✅ Success Metrics
+How we'll know if this was the right call:
+- [Metric 1]: Target by [timeframe]
+- [Metric 2]: Target by [timeframe]
+- [Leading indicator]: What we'll watch early
+
+## 🛡️ Addressing Likely Objections
+
+**"Why not [alternative approach]?"**
+[Your response]
+
+**"What if [concern]?"**
+[Your response]
+
+**"How can you be sure this will work?"**
+[Your response]
+
+## 📅 Next Steps & Timeline
+- [Date]: [Milestone]
+- [Date]: [Checkpoint for review]
+- [Date]: [Evaluation of outcomes]
+
+## 💬 Talking Points (for Q&A)
+Bullet points you can use when discussing this decision:
+- [Key point 1]
+- [Key point 2]
+- [Key point 3]
+
+---
+
+**Tone:** Confident but not overconfident. Acknowledge uncertainty. Show you've thought through objections. Make it clear this was a deliberate, reasoned choice—not impulsive.
+"""
+        
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": "You are a senior executive communications specialist. Create decision defense briefs at Fortune 500 caliber - comprehensive, rigorous, and designed for C-level stakeholder communication."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=7000
+        )
+        
+        return response.choices[0].message.content
+
+    def analyze_retrospective(self, retro_data: Dict) -> str:
+        """
+        Analyze decision retrospective to extract learnings
+        
+        Args:
+            retro_data: Dictionary containing retrospective details
+            
+        Returns:
+            Retrospective analysis and learnings
+        """
+        prompt = f"""You are a decision learning expert. Help extract learnings from a past decision—focus on learning, not blame.
+
+**Original Decision:**
+{retro_data.get('decision', '')}
+
+**What We Expected:**
+{retro_data.get('expected', '')}
+
+**What Actually Happened:**
+{retro_data.get('actual', '')}
+
+**Assumptions Analysis:**
+{retro_data.get('assumptions', 'Not specified')}
+
+**What Would You Do Differently:**
+{retro_data.get('differently', 'Not specified')}
+
+---
+
+Provide a learning-focused retrospective analysis:
+
+## 🔄 Outcome Summary
+Concise comparison:
+- **Expected:** [Summary]
+- **Actual:** [Summary]
+- **Variance:** [What differed and by how much]
+
+## ✅ What Went Right (and Why)
+Identify what worked and the underlying reasons:
+- [Success 1]: Why this happened, what enabled it
+- [Success 2]: Why this happened, what enabled it
+[Continue...]
+
+## ❌ What Didn't Go as Planned (and Why)
+Identify misses without blame:
+- [Miss 1]: What happened, why it diverged from expectations
+- [Miss 2]: What happened, why it diverged from expectations
+[Continue...]
+
+## 🔍 Assumption Testing Results
+
+**Assumptions That Held True:**
+- [Assumption]: How it was validated, why it held
+- [Assumption]: How it was validated, why it held
+
+**Assumptions That Broke:**
+- [Assumption]: How/when it broke, why we believed it, what we learned
+- [Assumption]: How/when it broke, why we believed it, what we learned
+
+**Assumptions We Never Actually Tested:**
+- [Assumption]: Why we didn't test it, what that cost us
+
+## 💡 Key Learnings
+
+### About Our Decision-Making Process
+- What decision process worked well?
+- What should we change next time?
+- What signals did we miss or misinterpret?
+
+### About Our Estimates
+- Were timelines accurate? If not, where did we misjudge?
+- Were resource estimates accurate? If not, what did we undercount?
+- Were impact estimates accurate? If not, what did we misunderstand?
+
+### About Our Product/Market
+- What did we learn about users?
+- What did we learn about our capabilities?
+- What did we learn about the competitive landscape?
+
+## 🎯 Concrete Guidance for Next Time
+
+**Do More Of:**
+- [Specific practice that worked]
+- [Specific practice that worked]
+
+**Do Less Of:**
+- [Specific practice that didn't work]
+- [Specific practice that didn't work]
+
+**Start Doing:**
+- [New practice to adopt]
+- [New practice to adopt]
+
+**Stop Doing:**
+- [Practice to abandon]
+- [Practice to abandon]
+
+## 📚 Pattern Recognition
+Does this retrospective reveal any recurring patterns?
+- Do we consistently over/underestimate certain things?
+- Do we have blind spots in specific areas?
+- What type of assumptions do we tend to get wrong?
+
+## 🏆 If You Could Do It Over
+With perfect hindsight, what's the ONE thing you'd change that would have had the biggest positive impact?
+
+---
+
+**CRITICAL:** Frame everything as learning, not blame. Use "we" language. Focus on process improvement and pattern recognition. The goal is to improve future decision-making, not relitigate the past.
+"""
+        
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": "You are a senior organizational learning expert. Extract deep insights from past decisions with the rigor expected in high-performing product organizations. Focus on patterns, systemic issues, and actionable improvements."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=6000
+        )
+        
+        return response.choices[0].message.content
