@@ -60,6 +60,26 @@ def app_page():
     """Render main application page"""
     return render_template('index.html')
 
+@app.route('/robots.txt')
+def robots():
+    """Serve robots.txt for SEO"""
+    return send_file('static/robots.txt', mimetype='text/plain')
+
+@app.route('/sitemap.xml')
+def sitemap():
+    """Serve sitemap.xml for SEO"""
+    return send_file('static/sitemap.xml', mimetype='application/xml')
+
+@app.route('/health')
+def health():
+    """Health check endpoint for monitoring"""
+    return jsonify({
+        'status': 'healthy',
+        'timestamp': datetime.now().isoformat(),
+        'service': 'Product Playground',
+        'version': '1.0.0'
+    }), 200
+
 @app.route('/analyze', methods=['POST'])
 def analyze():
     """Handle product challenge analysis"""

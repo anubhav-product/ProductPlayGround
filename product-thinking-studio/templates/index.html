@@ -2,8 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Playground · Analysis</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Product Playground · AI-Powered PM Decision Support</title>
+    <meta name="description" content="AI-powered product management intelligence platform. Analyze challenges, generate strategies, create user stories, assess risks, and more with GPT-4 powered insights.">
+    <meta name="keywords" content="product management, AI, GPT-4, decision support, user stories, product strategy, risk assessment">
+    <meta name="author" content="Product Playground">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://productplayground-1.onrender.com/app">
+    <meta property="og:title" content="Product Playground - AI PM Decision Support">
+    <meta property="og:description" content="AI-powered product management intelligence platform with 9 powerful features for PMs.">
+    <meta property="og:image" content="https://productplayground-1.onrender.com/static/og-image.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://productplayground-1.onrender.com/app">
+    <meta property="twitter:title" content="Product Playground - AI PM Decision Support">
+    <meta property="twitter:description" content="AI-powered product management intelligence platform with 9 powerful features for PMs.">
+    <meta property="twitter:image" content="https://productplayground-1.onrender.com/static/og-image.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -372,6 +393,177 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+        }
+
+        /* Walkthrough Mode Styles */
+        .step-indicator {
+            flex: 1;
+
+        /* Loading Spinner */
+        .loading {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin: 2rem 0;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Character Counter */
+        .char-counter {
+            text-align: right;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .char-counter.warning {
+            color: var(--warning);
+        }
+
+        .char-counter.error {
+            color: var(--error);
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 300px;
+            animation: slideInRight 0.3s ease-out;
+            z-index: 10000;
+        }
+
+        .toast.success {
+            border-color: var(--success);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .toast.error {
+            border-color: var(--error);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .toast.info {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+        }
+
+        .toast-message {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .toast-close:hover {
+            color: var(--text);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Mobile Responsive Improvements */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .tabs {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 0.5rem;
+            }
+
+            .tab-button {
+                min-width: 120px;
+                padding: 0.875rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .glass-card {
+                padding: 1.25rem;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+                padding: 1rem;
+                min-height: 50px;
+            }
+
+            .back-btn {
+                position: static;
+                margin: 1rem;
+                width: calc(100% - 2rem);
+                justify-content: center;
+            }
+
+            .toast {
+                right: 1rem;
+                left: 1rem;
+                min-width: unset;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Touch Target Improvements */
+        button, .tab-button, .btn, a {
+            min-height: 44px;
+            min-width: 44px;
         }
 
         /* Walkthrough Mode Styles */
@@ -1225,6 +1417,75 @@
         let currentWalkthroughStep = 1;
         let walkthroughData = {};
 
+        // Toast Notification System
+        function showToast(message, type = 'info', duration = 5000) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: '✅',
+                error: '❌',
+                info: 'ℹ️',
+                warning: '⚠️'
+            };
+            
+            toast.innerHTML = `
+                <span class="toast-icon">${icons[type] || icons.info}</span>
+                <div class="toast-message">${message}</div>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        // Character Counter
+        function setupCharCounter(textareaId, minChars = 50, maxChars = 2000) {
+            const textarea = document.getElementById(textareaId);
+            if (!textarea) return;
+            
+            const counter = document.createElement('div');
+            counter.className = 'char-counter';
+            counter.innerHTML = `<span id="${textareaId}-count">0</span> / ${maxChars} characters`;
+            
+            textarea.parentElement.appendChild(counter);
+            
+            textarea.addEventListener('input', function() {
+                const count = this.value.length;
+                const countSpan = document.getElementById(`${textareaId}-count`);
+                countSpan.textContent = count;
+                
+                counter.classList.remove('warning', 'error');
+                if (count > maxChars) {
+                    counter.classList.add('error');
+                } else if (count > maxChars * 0.9) {
+                    counter.classList.add('warning');
+                }
+                
+                if (count < minChars) {
+                    countSpan.parentElement.innerHTML = `<span id="${textareaId}-count">${count}</span> / ${maxChars} (min: ${minChars})`;
+                } else {
+                    countSpan.parentElement.innerHTML = `<span id="${textareaId}-count">${count}</span> / ${maxChars} ✓`;
+                }
+            });
+        }
+
+        // Initialize character counters when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            setupCharCounter('challenge-input', 50, 2000);
+            setupCharCounter('cause-input', 50, 2000);
+            setupCharCounter('strategy-input', 50, 2000);
+            setupCharCounter('context-input', 50, 2000);
+            setupCharCounter('risk-input', 50, 2000);
+            setupCharCounter('stakeholder-input', 50, 2000);
+            setupCharCounter('url-input', 10, 500);
+            setupCharCounter('prd-input', 100, 3000);
+        });
+
         // Get tab from URL parameter
         function getTabFromURL() {
             const params = new URLSearchParams(window.location.search);
@@ -1674,9 +1935,16 @@ Success Criteria: ${walkthroughData.success}
 
             if (!input) {
                 showAlert(alertDiv, '⚠️ Please describe your product challenge', 'warning');
+                showToast('Please enter a product challenge description', 'warning');
                 return;
             }
 
+            if (input.length < 50) {
+                showToast('Please provide more details (minimum 50 characters)', 'warning');
+                return;
+            }
+
+            showToast('Analyzing your challenge...', 'info', 2000);
             alertDiv.className = 'hidden';
             resultDiv.className = 'hidden';
             loadingDiv.classList.remove('hidden');
@@ -1699,6 +1967,7 @@ Success Criteria: ${walkthroughData.success}
                         errorMessage = `Server error (${response.status})`;
                     }
                     showAlert(alertDiv, `❌ ${errorMessage}`, 'error');
+                    showToast(errorMessage, 'error');
                     return;
                 }
 
@@ -1712,12 +1981,15 @@ Success Criteria: ${walkthroughData.success}
                     };
                     displayResult(resultDiv, data.analysis, input);
                     showAlert(alertDiv, '✅ Analysis complete! Review the strategic insights below.', 'success');
+                    showToast('Analysis complete! 🎉', 'success');
                 } else {
                     showAlert(alertDiv, `❌ ${data.error || 'Analysis failed'}`, 'error');
+                    showToast(data.error || 'Analysis failed', 'error');
                 }
             } catch (error) {
                 loadingDiv.classList.add('hidden');
                 showAlert(alertDiv, `❌ Error: ${error.message}`, 'error');
+                showToast(`Error: ${error.message}`, 'error');
             }
         }
 

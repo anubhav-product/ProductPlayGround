@@ -1,0 +1,14 @@
+# robots.txt for Product Playground
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://productplayground-1.onrender.com/static/sitemap.xml
+
+# Disallow API endpoints
+Disallow: /analyze
+Disallow: /analyze_*
+Disallow: /download_pdf
+
+# Allow static assets
+Allow: /static/
