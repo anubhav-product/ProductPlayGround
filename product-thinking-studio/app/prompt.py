@@ -595,6 +595,68 @@ Structure your response to support learning and critical thinking."""
         
         return themes if themes else ["General Product Strategy"]
     
+    def _format_headings(self, headings: dict) -> str:
+        """Format headings for prompt"""
+        result = []
+        for level, items in headings.items():
+            if items:
+                result.append(f"{level.upper()}: {', '.join(items[:5])}")
+        return '\n'.join(result) if result else "N/A"
+    
+    def _format_pricing(self, pricing: dict) -> str:
+        """Format pricing information"""
+        if not pricing:
+            return "N/A"
+        parts = []
+        if pricing.get('has_pricing_page'):
+            parts.append("Has dedicated pricing page")
+        if pricing.get('pricing_tiers'):
+            parts.append(f"Tiers: {', '.join(pricing['pricing_tiers'])}")
+        if pricing.get('pricing_signals'):
+            parts.append(f"Prices found: {', '.join(pricing['pricing_signals'][:5])}")
+        return '\n'.join(parts) if parts else "N/A"
+    
+    def _format_list(self, items: list) -> str:
+        """Format a list of items"""
+        return '\n- ' + '\n- '.join(items) if items else "N/A"
+    
+    def _format_tech_stack(self, tech: dict) -> str:
+        """Format technology stack"""
+        if not tech:
+            return "N/A"
+        parts = []
+        if tech.get('frameworks'):
+            parts.append(f"Frameworks: {', '.join(tech['frameworks'])}")
+        if tech.get('analytics'):
+            parts.append(f"Analytics: {', '.join(tech['analytics'])}")
+        return '\n'.join(parts) if parts else "N/A"
+    
+    def _format_structure(self, structure: dict) -> str:
+        """Format page structure"""
+        if not structure:
+            return "N/A"
+        parts = []
+        if structure.get('has_hero'):
+            parts.append("✓ Hero section")
+        if structure.get('has_navigation'):
+            parts.append("✓ Navigation menu")
+        if structure.get('sections_count'):
+            parts.append(f"{structure['sections_count']} content sections")
+        return ', '.join(parts) if parts else "N/A"
+    
+    def _format_social_proof(self, proof: dict) -> str:
+        """Format social proof elements"""
+        if not proof:
+            return "N/A"
+        parts = []
+        if proof.get('testimonials'):
+            parts.append(f"{len(proof['testimonials'])} testimonials found")
+        if proof.get('customer_logos'):
+            parts.append("Customer logos displayed")
+        if proof.get('stats'):
+            parts.append(f"Stats: {', '.join(proof['stats'][:3])}")
+        return '\n'.join(parts) if parts else "N/A"
+    
     def analyze_website(self, website_url: str, additional_context: str = "") -> str:
         """
         Analyze a website and provide product/market teardown insights
@@ -608,7 +670,18 @@ Structure your response to support learning and critical thinking."""
         """
         import httpx
         
-        prompt = self.build_website_teardown_prompt(website_url, additional_context)
+        # Try to scrape the website for actual content
+        scraped_data = None
+        try:
+            from app.web_scraper import scrape_website_sync
+            print(f"Scraping website: {website_url}")
+            scraped_data = scrape_website_sync(website_url)
+            print(f"Successfully scraped: {scraped_data.get('title', 'Unknown')}")
+        except Exception as scrape_error:
+            print(f"Web scraping failed (continuing without): {str(scrape_error)}")
+            # Continue without scraped data
+        
+        prompt = self.build_website_teardown_prompt(website_url, additional_context, scraped_data)
         
         try:
             # Create custom HTTP client with extended timeout
@@ -669,22 +742,60 @@ Be thorough yet concise. Every insight must be unique and valuable."""
             else:
                 raise Exception(f"Analysis failed: {error_msg}")
     
-    def build_website_teardown_prompt(self, website_url: str, additional_context: str) -> str:
+    def build_website_teardown_prompt(self, website_url: str, additional_context: str, scraped_data: dict = None) -> str:
         """
         Build the prompt for website teardown analysis
         
         Args:
             website_url: URL of the website to analyze
             additional_context: Optional context about the product
+            scraped_data: Optional scraped website data from Playwright
             
         Returns:
             Formatted prompt string
         """
         context_section = f"\n\n**Additional Context:**\n{additional_context}" if additional_context else ""
         
+        # Build scraped data section if available
+        scraped_section = ""
+        if scraped_data:
+            scraped_section = f"""
+
+**Scraped Website Data:**
+
+**Page Title:** {scraped_data.get('title', 'N/A')}
+
+**Meta Description:** {scraped_data.get('meta_description', 'N/A')}
+
+**Main Headings:**
+{self._format_headings(scraped_data.get('headings', {}))}
+
+**Navigation Menu:** {', '.join(scraped_data.get('navigation', [])[:15])}
+
+**Call-to-Actions:** {', '.join(scraped_data.get('call_to_actions', [])[:10])}
+
+**Pricing Information:**
+{self._format_pricing(scraped_data.get('pricing_signals', {}))}
+
+**Key Features Mentioned:**
+{self._format_list(scraped_data.get('features_mentioned', [])[:10])}
+
+**Technology Stack:**
+{self._format_tech_stack(scraped_data.get('technology_stack', {}))}
+
+**Page Structure:**
+{self._format_structure(scraped_data.get('page_structure', {}))}
+
+**Social Proof:**
+{self._format_social_proof(scraped_data.get('social_proof', {}))}
+
+**Main Content Preview:**
+{scraped_data.get('main_content', '')[:1000]}...
+"""
+        
         return f"""You are conducting a high-stakes product and market teardown for a strategic decision-maker who needs deep, actionable insights.
 
-**Website URL:** {website_url}{context_section}
+**Website URL:** {website_url}{context_section}{scraped_section}
 
 ---
 

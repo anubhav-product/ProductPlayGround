@@ -72,12 +72,50 @@ A professional, AI-powered suite for Product Managers to structure their thinkin
    echo "OPENAI_API_KEY=your-api-key-here" > .env
    ```
 
-4. **Run the application**
+4. **Install Playwright (for web scraping)**
+   ```bash
+   playwright install chromium
+   ```
+
+5. **Run the application**
    ```bash
    python flask_app.py
    ```
    
    Or use the run script:
+   ```bash
+   ./run.sh
+   ```
+
+6. **Open in browser**
+   ```
+   Navigate to http://127.0.0.1:5000
+   ```
+
+## 🌐 Making it a .com (Production Deployment)
+
+Want to deploy Product Playground as a professional .com website? 
+
+**Quick Start Options:**
+- **Vercel** (Free tier) - Deploy in 2 minutes
+- **Railway** ($5/month) - Simple, powerful
+- **DigitalOcean** ($12/month) - Best value
+- **AWS** (Custom) - Enterprise scale
+
+**Complete guide**: See [docs/PRODUCTION-DEPLOYMENT.md](docs/PRODUCTION-DEPLOYMENT.md) for:
+- Platform comparisons and costs
+- Custom domain setup
+- SSL/HTTPS configuration
+- Production optimization
+- Monitoring and scaling
+
+**Quick Deploy to Vercel:**
+```bash
+npm install -g vercel
+cd product-thinking-studio
+vercel
+# Follow prompts to deploy
+```
    ```bash
    ./run.sh
    ```
