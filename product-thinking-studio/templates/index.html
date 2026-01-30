@@ -2566,8 +2566,12 @@ Success Criteria: ${walkthroughData.success}
                 .replace(/^(.+)$/gm, '<p style="margin: 1rem 0; line-height: 1.8;">$1</p>');
         }
 
-        // Initialize page on load
-        initializePage();
+        // Initialize page on load - wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializePage);
+        } else {
+            initializePage();
+        }
     </script>
 </body>
 </html>
