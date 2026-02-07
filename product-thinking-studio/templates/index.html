@@ -831,7 +831,7 @@
             </div>
             
             <div id="challenge-alert" class="hidden"></div>
-            <div id="challenge-loading" class="hidden loading">
+            <div id="challenge-loading" class="hidden loading" style="display: none;">
                 <div class="spinner"></div>
                 <p style="color: var(--text-muted);">🧠 Analyzing your product challenge with AI...</p>
             </div>
@@ -913,7 +913,7 @@
             </div>
 
             <div id="kpi-alert" class="hidden"></div>
-            <div id="kpi-loading" class="hidden loading">
+            <div id="kpi-loading" class="hidden loading" style="display: none;">
                 <div class="spinner"></div>
                 <p style="color: var(--text-muted);">🧠 Analyzing your dashboard metrics with AI...</p>
             </div>
@@ -949,7 +949,7 @@
             </div>
             
             <div id="teardown-alert" class="hidden"></div>
-            <div id="teardown-loading" class="hidden loading">
+            <div id="teardown-loading" class="hidden loading" style="display: none;">
                 <div class="spinner"></div>
                 <p style="color: var(--text-muted);">🧠 Conducting product & market teardown analysis...</p>
             </div>
@@ -993,7 +993,7 @@
                     </div>
                 </div>
 
-                <div id="walkthrough-loading" class="hidden loading">
+                <div id="walkthrough-loading" class="hidden loading" style="display: none;">
                     <div class="spinner"></div>
                     <p style="color: var(--text-muted);">🧠 Analyzing based on your thinking...</p>
                 </div>
@@ -1026,7 +1026,7 @@
                 </div>
 
                 <!-- Step 2: Hypothesis Formation -->
-                <div id="wt-step-2" class="walkthrough-step hidden">
+                <div id="wt-step-2" class="walkthrough-step hidden" style="display: none;">
                     <h3 class="subsection-header">
                         <span>💡</span>
                         <span>Step 2: Hypothesis Formation</span>
@@ -1055,7 +1055,7 @@
                 </div>
 
                 <!-- Step 3: AI Analysis -->
-                <div id="wt-step-3" class="walkthrough-step hidden">
+                <div id="wt-step-3" class="walkthrough-step hidden" style="display: none;">
                     <h3 class="subsection-header">
                         <span>🤖</span>
                         <span>Step 3: AI Analysis & Insights</span>
@@ -1070,7 +1070,7 @@
                 </div>
 
                 <!-- Step 4: Tradeoffs & Risks -->
-                <div id="wt-step-4" class="walkthrough-step hidden">
+                <div id="wt-step-4" class="walkthrough-step hidden" style="display: none;">
                     <h3 class="subsection-header">
                         <span>⚖️</span>
                         <span>Step 4: Tradeoffs & Risks</span>
@@ -1085,7 +1085,7 @@
                 </div>
 
                 <!-- Step 5: Next Steps & Decision -->
-                <div id="wt-step-5" class="walkthrough-step hidden">
+                <div id="wt-step-5" class="walkthrough-step hidden" style="display: none;">
                     <h3 class="subsection-header">
                         <span>🎯</span>
                         <span>Step 5: Recommended Next Steps</span>
@@ -1182,7 +1182,7 @@
             </div>
 
             <div id="framing-alert" class="hidden"></div>
-            <div id="framing-loading" class="hidden loading">
+            <div id="framing-loading" class="hidden loading" style="display: none;">
                 <div class="spinner"></div>
                 <p style="color: var(--text-muted);">🧠 Clarifying your decision frame...</p>
             </div>
@@ -1234,7 +1234,7 @@
             </div>
 
             <div id="dashboard-alert" class="hidden"></div>
-            <div id="dashboard-loading" class="hidden loading">
+            <div id="dashboard-loading" class="hidden loading" style="display: none;">
                 <div class="spinner"></div>
                 <p style="color: var(--text-muted);">🧠 Analyzing signals and forming hypotheses...</p>
             </div>
@@ -1295,7 +1295,7 @@
             </div>
 
             <div id="confidence-alert" class="hidden"></div>
-            <div id="confidence-loading" class="hidden loading">
+            <div id="confidence-loading" class="hidden loading" style="display: none;">
                 <div class="spinner"></div>
                 <p style="color: var(--text-muted);">🧠 Assessing signal strength and confidence...</p>
             </div>
@@ -1365,7 +1365,7 @@
             </div>
 
             <div id="defense-alert" class="hidden"></div>
-            <div id="defense-loading" class="hidden loading">
+            <div id="defense-loading" class="hidden loading" style="display: none;">
                 <div class="spinner"></div>
                 <p style="color: var(--text-muted);">🧠 Crafting your decision defense brief...</p>
             </div>
@@ -1435,7 +1435,7 @@
             </div>
 
             <div id="retrospective-alert" class="hidden"></div>
-            <div id="retrospective-loading" class="hidden loading">
+            <div id="retrospective-loading" class="hidden loading" style="display: none;">
                 <div class="spinner"></div>
                 <p style="color: var(--text-muted);">🧠 Analyzing retrospective and extracting learnings...</p>
             </div>
@@ -1643,6 +1643,7 @@
                 const stepEl = document.getElementById(`wt-step-${i}`);
                 if (stepEl) {
                     stepEl.classList.add('hidden');
+                    stepEl.style.display = 'none';
                 }
             }
             
@@ -1651,6 +1652,7 @@
             const targetStep = document.getElementById(`wt-step-${stepNumber}`);
             if (targetStep) {
                 targetStep.classList.remove('hidden');
+                targetStep.style.display = 'block';
             }
             
             // Update indicators
