@@ -730,7 +730,11 @@
 
         /* Utility Classes */
         .hidden {
-            display: none;
+            display: none !important;
+        }
+
+        .tab-content.hidden {
+            display: none !important;
         }
 
         .text-center {
@@ -807,7 +811,7 @@
 
     <div class="container">
         <!-- Product Challenge Analysis -->
-        <div id="challenge-tab" class="tab-content hidden">
+        <div id="challenge-tab" class="tab-content hidden" style="display: none;">
             <div class="glass-card">
                 <h2 class="section-header">
                     <span>💡</span>
@@ -835,7 +839,7 @@
         </div>
 
         <!-- KPI Dashboard Tab -->
-        <div id="kpi-tab" class="tab-content hidden">
+        <div id="kpi-tab" class="tab-content hidden" style="display: none;">
             <div class="glass-card">
                 <h2 class="section-header">
                     <span>📊</span>
@@ -917,7 +921,7 @@
         </div>
 
         <!-- Product Teardown Tab -->
-        <div id="teardown-tab" class="tab-content hidden">
+        <div id="teardown-tab" class="tab-content hidden" style="display: none;">
             <div class="glass-card">
                 <h2 class="section-header">
                     <span>🔍</span>
@@ -953,7 +957,7 @@
         </div>
 
         <!-- Walkthrough Mode Tab -->
-        <div id="walkthrough-tab" class="tab-content hidden">
+        <div id="walkthrough-tab" class="tab-content hidden" style="display: none;">
             <div class="glass-card">
                 <h2 class="section-header">
                     <span>🧭</span>
@@ -1107,7 +1111,7 @@
         </div>
 
         <!-- Decision Framing Tab -->
-        <div id="framing-tab" class="tab-content hidden">
+        <div id="framing-tab" class="tab-content hidden" style="display: none;">
             <div class="glass-card">
                 <h2 class="section-header">
                     <span>🎯</span>
@@ -1186,7 +1190,7 @@
         </div>
 
         <!-- Decision Dashboard Tab -->
-        <div id="dashboard-tab" class="tab-content hidden">
+        <div id="dashboard-tab" class="tab-content hidden" style="display: none;">
             <div class="glass-card">
                 <h2 class="section-header">
                     <span>📊</span>
@@ -1238,7 +1242,7 @@
         </div>
 
         <!-- Decision Confidence Tab -->
-        <div id="confidence-tab" class="tab-content hidden">
+        <div id="confidence-tab" class="tab-content hidden" style="display: none;">
             <div class="glass-card">
                 <h2 class="section-header">
                     <span>⚡</span>
@@ -1299,7 +1303,7 @@
         </div>
 
         <!-- Decision Defense Tab -->
-        <div id="defense-tab" class="tab-content hidden">
+        <div id="defense-tab" class="tab-content hidden" style="display: none;">
             <div class="glass-card">
                 <h2 class="section-header">
                     <span>🛡️</span>
@@ -1369,7 +1373,7 @@
         </div>
 
         <!-- Decision Retrospective Tab -->
-        <div id="retrospective-tab" class="tab-content hidden">
+        <div id="retrospective-tab" class="tab-content hidden" style="display: none;">
             <div class="glass-card">
                 <h2 class="section-header">
                     <span>🔄</span>
@@ -1528,12 +1532,16 @@
 
         function showTab(tab) {
             // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.querySelectorAll('.tab-content').forEach(t => {
+                t.classList.add('hidden');
+                t.style.display = 'none';
+            });
             
             // Show selected tab
             const tabElement = document.getElementById(`${tab}-tab`);
             if (tabElement) {
                 tabElement.classList.remove('hidden');
+                tabElement.style.display = 'block';
                 
                 // Initialize walkthrough on first load
                 if (tab === 'walkthrough' && currentWalkthroughStep === 1) {
@@ -1731,7 +1739,9 @@ Success Criteria: ${walkthroughData.success}
             
             // Show loading
             alertDiv.className = 'hidden';
+            alertDiv.style.display = 'none';
             loadingDiv.classList.remove('hidden');
+            loadingDiv.style.display = 'block';
 
             try {
                 const response = await fetch('/analyze-walkthrough', {
@@ -1744,6 +1754,7 @@ Success Criteria: ${walkthroughData.success}
                 });
 
                 loadingDiv.classList.add('hidden');
+                loadingDiv.style.display = 'none';
 
                 if (!response.ok) {
                     let errorMessage = 'Analysis failed';
@@ -1754,6 +1765,7 @@ Success Criteria: ${walkthroughData.success}
                         errorMessage = `Server error (${response.status})`;
                     }
                     showAlert(alertDiv, `❌ ${errorMessage}`, 'error');
+                    alertDiv.style.display = 'block';
                     document.getElementById('wt-step-2').classList.remove('hidden');
                     return;
                 }
@@ -1774,11 +1786,14 @@ Success Criteria: ${walkthroughData.success}
                     navigateToStep(3);
                 } else {
                     showAlert(alertDiv, `❌ ${data.error || 'Analysis failed'}`, 'error');
+                    alertDiv.style.display = 'block';
                     document.getElementById('wt-step-2').classList.remove('hidden');
                 }
             } catch (error) {
                 loadingDiv.classList.add('hidden');
+                loadingDiv.style.display = 'none';
                 showAlert(alertDiv, `❌ Error: ${error.message}`, 'error');
+                alertDiv.style.display = 'block';
                 document.getElementById('wt-step-2').classList.remove('hidden');
             }
         }
@@ -1963,19 +1978,20 @@ Success Criteria: ${walkthroughData.success}
 
             if (!input) {
                 showAlert(alertDiv, '⚠️ Please describe your product challenge', 'warning');
-                showToast('Please enter a product challenge description', 'warning');
                 return;
             }
 
             if (input.length < 50) {
-                showToast('Please provide more details (minimum 50 characters)', 'warning');
+                showAlert(alertDiv, '⚠️ Please provide more details (minimum 50 characters)', 'warning');
                 return;
             }
 
-            showToast('Analyzing your challenge...', 'info', 2000);
             alertDiv.className = 'hidden';
+            alertDiv.style.display = 'none';
             resultDiv.className = 'hidden';
+            resultDiv.style.display = 'none';
             loadingDiv.classList.remove('hidden');
+            loadingDiv.style.display = 'block';
 
             try {
                 const response = await fetch('/analyze', {
@@ -1985,6 +2001,7 @@ Success Criteria: ${walkthroughData.success}
                 });
 
                 loadingDiv.classList.add('hidden');
+                loadingDiv.style.display = 'none';
 
                 if (!response.ok) {
                     let errorMessage = 'Analysis failed';
@@ -1995,7 +2012,7 @@ Success Criteria: ${walkthroughData.success}
                         errorMessage = `Server error (${response.status})`;
                     }
                     showAlert(alertDiv, `❌ ${errorMessage}`, 'error');
-                    showToast(errorMessage, 'error');
+                    alertDiv.style.display = 'block';
                     return;
                 }
 
@@ -2008,16 +2025,15 @@ Success Criteria: ${walkthroughData.success}
                         timestamp: data.timestamp
                     };
                     displayResult(resultDiv, data.analysis, input);
-                    showAlert(alertDiv, '✅ Analysis complete! Review the strategic insights below.', 'success');
-                    showToast('Analysis complete! 🎉', 'success');
                 } else {
                     showAlert(alertDiv, `❌ ${data.error || 'Analysis failed'}`, 'error');
-                    showToast(data.error || 'Analysis failed', 'error');
+                    alertDiv.style.display = 'block';
                 }
             } catch (error) {
                 loadingDiv.classList.add('hidden');
+                loadingDiv.style.display = 'none';
                 showAlert(alertDiv, `❌ Error: ${error.message}`, 'error');
-                showToast(`Error: ${error.message}`, 'error');
+                alertDiv.style.display = 'block';
             }
         }
 
@@ -2047,8 +2063,11 @@ Success Criteria: ${walkthroughData.success}
             };
 
             alertDiv.className = 'hidden';
+            alertDiv.style.display = 'none';
             resultDiv.className = 'hidden';
+            resultDiv.style.display = 'none';
             loadingDiv.classList.remove('hidden');
+            loadingDiv.style.display = 'block';
 
             try {
                 const response = await fetch('/analyze-kpi', {
@@ -2058,6 +2077,7 @@ Success Criteria: ${walkthroughData.success}
                 });
 
                 loadingDiv.classList.add('hidden');
+                loadingDiv.style.display = 'none';
 
                 if (!response.ok) {
                     let errorMessage = 'Analysis failed';
@@ -2068,6 +2088,7 @@ Success Criteria: ${walkthroughData.success}
                         errorMessage = `Server error (${response.status})`;
                     }
                     showAlert(alertDiv, `❌ ${errorMessage}`, 'error');
+                    alertDiv.style.display = 'block';
                     return;
                 }
 
@@ -2080,13 +2101,15 @@ Success Criteria: ${walkthroughData.success}
                         timestamp: data.timestamp
                     };
                     displayResult(resultDiv, data.analysis, '');
-                    showAlert(alertDiv, '✅ KPI analysis complete! Review the diagnostic insights below.', 'success');
                 } else {
                     showAlert(alertDiv, `❌ ${data.error || 'Analysis failed'}`, 'error');
+                    alertDiv.style.display = 'block';
                 }
             } catch (error) {
                 loadingDiv.classList.add('hidden');
+                loadingDiv.style.display = 'none';
                 showAlert(alertDiv, `❌ Error: ${error.message}`, 'error');
+                alertDiv.style.display = 'block';
             }
         }
 
@@ -2103,8 +2126,11 @@ Success Criteria: ${walkthroughData.success}
             }
 
             alertDiv.className = 'hidden';
+            alertDiv.style.display = 'none';
             resultDiv.className = 'hidden';
+            resultDiv.style.display = 'none';
             loadingDiv.classList.remove('hidden');
+            loadingDiv.style.display = 'block';
 
             try {
                 const response = await fetch('/analyze-website', {
@@ -2117,6 +2143,7 @@ Success Criteria: ${walkthroughData.success}
                 });
 
                 loadingDiv.classList.add('hidden');
+                loadingDiv.style.display = 'none';
 
                 if (!response.ok) {
                     let errorMessage = 'Analysis failed';
@@ -2127,6 +2154,7 @@ Success Criteria: ${walkthroughData.success}
                         errorMessage = `Server error (${response.status})`;
                     }
                     showAlert(alertDiv, `❌ ${errorMessage}`, 'error');
+                    alertDiv.style.display = 'block';
                     return;
                 }
 
@@ -2139,13 +2167,15 @@ Success Criteria: ${walkthroughData.success}
                         timestamp: data.timestamp
                     };
                     displayResult(resultDiv, data.analysis, data.website_url);
-                    showAlert(alertDiv, '✅ Product teardown complete! Review the strategic insights below.', 'success');
                 } else {
                     showAlert(alertDiv, `❌ ${data.error || 'Analysis failed'}`, 'error');
+                    alertDiv.style.display = 'block';
                 }
             } catch (error) {
                 loadingDiv.classList.add('hidden');
+                loadingDiv.style.display = 'none';
                 showAlert(alertDiv, `❌ Error: ${error.message}`, 'error');
+                alertDiv.style.display = 'block';
             }
         }
 
@@ -2165,6 +2195,7 @@ Success Criteria: ${walkthroughData.success}
                 .replace(/\n\n/g, '<p></p>');
 
             div.className = 'analysis-result';
+            div.style.display = 'block';
             div.innerHTML = `
                 <h2>🎯 Strategic Analysis</h2>
                 ${html}
@@ -2218,12 +2249,16 @@ Success Criteria: ${walkthroughData.success}
 
             if (!framingData.decision) {
                 showAlert(alertDiv, '⚠️ Please provide a decision statement', 'error');
+                alertDiv.style.display = 'block';
                 return;
             }
 
             alertDiv.className = 'hidden';
+            alertDiv.style.display = 'none';
             resultDiv.className = 'hidden';
+            resultDiv.style.display = 'none';
             loadingDiv.classList.remove('hidden');
+            loadingDiv.style.display = 'block';
 
             try {
                 const response = await fetch('/analyze-framing', {
@@ -2233,6 +2268,7 @@ Success Criteria: ${walkthroughData.success}
                 });
 
                 loadingDiv.classList.add('hidden');
+                loadingDiv.style.display = 'none';
 
                 if (!response.ok) {
                     let errorMessage = 'Analysis failed';
@@ -2243,6 +2279,7 @@ Success Criteria: ${walkthroughData.success}
                         errorMessage = `Server error (${response.status})`;
                     }
                     showAlert(alertDiv, `❌ ${errorMessage}`, 'error');
+                    alertDiv.style.display = 'block';
                     return;
                 }
 
@@ -2256,6 +2293,7 @@ Success Criteria: ${walkthroughData.success}
                         type: 'Decision Framing'
                     };
                     resultDiv.className = 'analysis-result';
+                    resultDiv.style.display = 'block';
                     resultDiv.innerHTML = formatAnalysisHTML(data.analysis) + `
                         <div style="margin-top: 2.5rem; text-align: center;">
                             <button class="btn btn-secondary" onclick="downloadPDF()">
@@ -2266,10 +2304,13 @@ Success Criteria: ${walkthroughData.success}
                     `;
                 } else {
                     showAlert(alertDiv, `❌ ${data.error || 'Analysis failed'}`, 'error');
+                    alertDiv.style.display = 'block';
                 }
             } catch (error) {
                 loadingDiv.classList.add('hidden');
+                loadingDiv.style.display = 'none';
                 showAlert(alertDiv, `❌ Error: ${error.message}`, 'error');
+                alertDiv.style.display = 'block';
             }
         }
 
@@ -2287,12 +2328,16 @@ Success Criteria: ${walkthroughData.success}
 
             if (!dashboardData.problem) {
                 showAlert(alertDiv, '⚠️ Please describe what appears to be going wrong', 'error');
+                alertDiv.style.display = 'block';
                 return;
             }
 
             alertDiv.className = 'hidden';
+            alertDiv.style.display = 'none';
             resultDiv.className = 'hidden';
+            resultDiv.style.display = 'none';
             loadingDiv.classList.remove('hidden');
+            loadingDiv.style.display = 'block';
 
             try {
                 const response = await fetch('/analyze-dashboard', {
@@ -2302,6 +2347,7 @@ Success Criteria: ${walkthroughData.success}
                 });
 
                 loadingDiv.classList.add('hidden');
+                loadingDiv.style.display = 'none';
 
                 if (!response.ok) {
                     let errorMessage = 'Analysis failed';
@@ -2312,6 +2358,7 @@ Success Criteria: ${walkthroughData.success}
                         errorMessage = `Server error (${response.status})`;
                     }
                     showAlert(alertDiv, `❌ ${errorMessage}`, 'error');
+                    alertDiv.style.display = 'block';
                     return;
                 }
 
@@ -2325,6 +2372,7 @@ Success Criteria: ${walkthroughData.success}
                         type: 'Decision Dashboard'
                     };
                     resultDiv.className = 'analysis-result';
+                    resultDiv.style.display = 'block';
                     resultDiv.innerHTML = formatAnalysisHTML(data.analysis) + `
                         <div style="margin-top: 2.5rem; text-align: center;">
                             <button class="btn btn-secondary" onclick="downloadPDF()">
@@ -2335,10 +2383,13 @@ Success Criteria: ${walkthroughData.success}
                     `;
                 } else {
                     showAlert(alertDiv, `❌ ${data.error || 'Analysis failed'}`, 'error');
+                    alertDiv.style.display = 'block';
                 }
             } catch (error) {
                 loadingDiv.classList.add('hidden');
+                loadingDiv.style.display = 'none';
                 showAlert(alertDiv, `❌ Error: ${error.message}`, 'error');
+                alertDiv.style.display = 'block';
             }
         }
 
@@ -2357,12 +2408,16 @@ Success Criteria: ${walkthroughData.success}
 
             if (!confidenceData.decision || !confidenceData.evidence) {
                 showAlert(alertDiv, '⚠️ Please provide decision and evidence fields', 'error');
+                alertDiv.style.display = 'block';
                 return;
             }
 
             alertDiv.className = 'hidden';
+            alertDiv.style.display = 'none';
             resultDiv.className = 'hidden';
+            resultDiv.style.display = 'none';
             loadingDiv.classList.remove('hidden');
+            loadingDiv.style.display = 'block';
 
             try {
                 const response = await fetch('/analyze-confidence', {
@@ -2372,6 +2427,7 @@ Success Criteria: ${walkthroughData.success}
                 });
 
                 loadingDiv.classList.add('hidden');
+                loadingDiv.style.display = 'none';
 
                 if (!response.ok) {
                     let errorMessage = 'Analysis failed';
@@ -2382,6 +2438,7 @@ Success Criteria: ${walkthroughData.success}
                         errorMessage = `Server error (${response.status})`;
                     }
                     showAlert(alertDiv, `❌ ${errorMessage}`, 'error');
+                    alertDiv.style.display = 'block';
                     return;
                 }
 
@@ -2395,6 +2452,7 @@ Success Criteria: ${walkthroughData.success}
                         type: 'Confidence Assessment'
                     };
                     resultDiv.className = 'analysis-result';
+                    resultDiv.style.display = 'block';
                     resultDiv.innerHTML = formatAnalysisHTML(data.analysis) + `
                         <div style="margin-top: 2.5rem; text-align: center;">
                             <button class="btn btn-secondary" onclick="downloadPDF()">
@@ -2405,10 +2463,13 @@ Success Criteria: ${walkthroughData.success}
                     `;
                 } else {
                     showAlert(alertDiv, `❌ ${data.error || 'Analysis failed'}`, 'error');
+                    alertDiv.style.display = 'block';
                 }
             } catch (error) {
                 loadingDiv.classList.add('hidden');
+                loadingDiv.style.display = 'none';
                 showAlert(alertDiv, `❌ Error: ${error.message}`, 'error');
+                alertDiv.style.display = 'block';
             }
         }
 
@@ -2428,12 +2489,16 @@ Success Criteria: ${walkthroughData.success}
 
             if (!defenseData.decision || !defenseData.rationale) {
                 showAlert(alertDiv, '⚠️ Please provide decision and rationale fields', 'error');
+                alertDiv.style.display = 'block';
                 return;
             }
 
             alertDiv.className = 'hidden';
+            alertDiv.style.display = 'none';
             resultDiv.className = 'hidden';
+            resultDiv.style.display = 'none';
             loadingDiv.classList.remove('hidden');
+            loadingDiv.style.display = 'block';
 
             try {
                 const response = await fetch('/analyze-defense', {
@@ -2443,6 +2508,7 @@ Success Criteria: ${walkthroughData.success}
                 });
 
                 loadingDiv.classList.add('hidden');
+                loadingDiv.style.display = 'none';
 
                 if (!response.ok) {
                     let errorMessage = 'Analysis failed';
@@ -2453,6 +2519,7 @@ Success Criteria: ${walkthroughData.success}
                         errorMessage = `Server error (${response.status})`;
                     }
                     showAlert(alertDiv, `❌ ${errorMessage}`, 'error');
+                    alertDiv.style.display = 'block';
                     return;
                 }
 
@@ -2466,6 +2533,7 @@ Success Criteria: ${walkthroughData.success}
                         type: 'Decision Defense Pack'
                     };
                     resultDiv.className = 'analysis-result';
+                    resultDiv.style.display = 'block';
                     resultDiv.innerHTML = formatAnalysisHTML(data.analysis) + `
                         <div style="margin-top: 2.5rem; text-align: center;">
                             <button class="btn btn-secondary" onclick="downloadPDF()">
@@ -2476,10 +2544,13 @@ Success Criteria: ${walkthroughData.success}
                     `;
                 } else {
                     showAlert(alertDiv, `❌ ${data.error || 'Analysis failed'}`, 'error');
+                    alertDiv.style.display = 'block';
                 }
             } catch (error) {
                 loadingDiv.classList.add('hidden');
+                loadingDiv.style.display = 'none';
                 showAlert(alertDiv, `❌ Error: ${error.message}`, 'error');
+                alertDiv.style.display = 'block';
             }
         }
 
@@ -2499,12 +2570,16 @@ Success Criteria: ${walkthroughData.success}
 
             if (!retroData.decision || !retroData.expected || !retroData.actual) {
                 showAlert(alertDiv, '⚠️ Please fill in decision, expected, and actual outcome fields', 'error');
+                alertDiv.style.display = 'block';
                 return;
             }
 
             alertDiv.className = 'hidden';
+            alertDiv.style.display = 'none';
             resultDiv.className = 'hidden';
+            resultDiv.style.display = 'none';
             loadingDiv.classList.remove('hidden');
+            loadingDiv.style.display = 'block';
 
             try {
                 const response = await fetch('/analyze-retrospective', {
@@ -2514,6 +2589,7 @@ Success Criteria: ${walkthroughData.success}
                 });
 
                 loadingDiv.classList.add('hidden');
+                loadingDiv.style.display = 'none';
 
                 if (!response.ok) {
                     let errorMessage = 'Analysis failed';
@@ -2524,6 +2600,7 @@ Success Criteria: ${walkthroughData.success}
                         errorMessage = `Server error (${response.status})`;
                     }
                     showAlert(alertDiv, `❌ ${errorMessage}`, 'error');
+                    alertDiv.style.display = 'block';
                     return;
                 }
 
@@ -2537,6 +2614,7 @@ Success Criteria: ${walkthroughData.success}
                         type: 'Decision Retrospective'
                     };
                     resultDiv.className = 'analysis-result';
+                    resultDiv.style.display = 'block';
                     resultDiv.innerHTML = formatAnalysisHTML(data.analysis) + `
                         <div style="margin-top: 2.5rem; text-align: center;">
                             <button class="btn btn-secondary" onclick="downloadPDF()">
@@ -2547,10 +2625,13 @@ Success Criteria: ${walkthroughData.success}
                     `;
                 } else {
                     showAlert(alertDiv, `❌ ${data.error || 'Analysis failed'}`, 'error');
+                    alertDiv.style.display = 'block';
                 }
             } catch (error) {
                 loadingDiv.classList.add('hidden');
+                loadingDiv.style.display = 'none';
                 showAlert(alertDiv, `❌ Error: ${error.message}`, 'error');
+                alertDiv.style.display = 'block';
             }
         }
 

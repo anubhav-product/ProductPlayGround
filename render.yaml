@@ -3,7 +3,7 @@ services:
     name: product-playground
     runtime: python
     plan: free
-    buildCommand: pip install -r product-thinking-studio/requirements.txt && pip install gunicorn
+    buildCommand: pip install -r product-thinking-studio/requirements.txt && playwright install chromium && playwright install-deps chromium
     startCommand: cd product-thinking-studio && gunicorn -c gunicorn.conf.py flask_app:app
     envVars:
       - key: OPENAI_API_KEY
@@ -15,4 +15,4 @@ services:
       - key: MAX_TOKENS
         value: "4000"
       - key: PYTHON_VERSION
-        value: 3.10.0
+        value: 3.12.0
