@@ -33,12 +33,13 @@ class WebScraper:
         if self.playwright:
             await self.playwright.stop()
             
-    async def scrape_website(self, url: str) -> Dict:
+    async def scrape_website(self, url: str, timeout: int = 20000) -> Dict:
         """
         Scrape a website and extract comprehensive information
         
         Args:
             url: The website URL to scrape
+            timeout: Timeout in milliseconds (default 20s)
             
         Returns:
             Dictionary containing scraped data
@@ -49,8 +50,18 @@ class WebScraper:
                 
             page = await self.context.new_page()
             
-            # Navigate and wait for content
-            await page.goto(url, wait_until='networkidle', timeout=30000)
+            try:
+                # Navigate with timeout - use domcontentloaded for faster loading
+                # Fallback to 'load' event if domcontentloaded doesn't work
+                await page.goto(url, wait_until='domcontentloaded', timeout=timeout)
+            except Exception as nav_error:
+                print(f"Navigation timeout/error for {url}: {str(nav_error)}")
+                # Try with a simple load, or continue with partial content
+                try:
+                    await page.goto(url, wait_until='load', timeout=10000)
+                except:
+                    print(f"Failed to load {url}, using partial content")
+                    pass
             
             # Extract comprehensive page data
             data = {
@@ -74,7 +85,13 @@ class WebScraper:
             
         except Exception as e:
             print(f"Error scraping {url}: {str(e)}")
-            raise
+            # Return minimal fallback data instead of raising
+            return {
+                'url': url,
+                'title': 'Website Data',
+                'error': str(e),
+                'status': 'partial_scrape'
+            }
             
     async def _get_meta_description(self, page) -> str:
         """Extract meta description"""
@@ -320,14 +337,46 @@ class WebScraper:
         return contact
 
 
-def scrape_website_sync(url: str) -> Dict:
-    """Synchronous wrapper for async scraping"""
+def scrape_website_sync(url: str, timeout_seconds: int = 25) -> Dict:
+    """
+    Synchronous wrapper for async scraping with timeout
+    
+    Args:
+        url: Website URL to scrape
+        timeout_seconds: Maximum time to wait (default 25s)
+        
+    Returns:
+        Dictionary with scraped data or empty dict if timeout/error
+    """
+    import signal
+    
     async def run():
         scraper = WebScraper()
         try:
-            data = await scraper.scrape_website(url)
+            data = await scraper.scrape_website(url, timeout=timeout_seconds * 1000)
             return data
+        except asyncio.TimeoutError:
+            print(f"Scrape timeout for {url}")
+            return {'url': url, 'error': 'Scraping timed out - content may be limited', 'status': 'timeout'}
+        except Exception as e:
+            print(f"Scrape error for {url}: {str(e)}")
+            return {'url': url, 'error': str(e), 'status': 'error'}
         finally:
-            await scraper.close()
+            try:
+                await scraper.close()
+            except:
+                pass
     
-    return asyncio.run(run())
+    try:
+        # Run with timeout protection
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        result = loop.run_until_complete(asyncio.wait_for(run(), timeout=timeout_seconds))
+        loop.close()
+        return result
+    except asyncio.TimeoutError:
+        print(f"Async wrapper timeout for {url}")
+        return {'url': url, 'error': 'Scraping timed out', 'status': 'timeout'}
+    except Exception as e:
+        print(f"Sync wrapper error for {url}: {str(e)}")
+        return {'url': url, 'error': str(e), 'status': 'error'}
