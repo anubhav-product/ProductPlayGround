@@ -85,6 +85,7 @@
             color: var(--text);
             line-height: 1.6;
             min-height: 100vh;
+            padding-bottom: 130px;
             background-image: 
                 radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
                 radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.1) 0px, transparent 50%);
@@ -347,48 +348,39 @@
             font-size: 0.95rem;
         }
 
-        /* Navigation Tabs / Tool Launcher */
+        /* Navigation Tabs / Tool Launcher - Bottom Bar */
         .tabs,
         .tool-menu {
             position: fixed;
-            top: 1.5rem;
-            right: 1.5rem;
+            bottom: 0;
+            left: 0;
+            right: 0;
             z-index: 1000;
-            width: min(520px, calc(100vw - 3rem));
-            max-height: calc(100vh - 4rem);
+            width: 100%;
+            max-height: none;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.8rem;
-            padding: 1.2rem;
-            background: rgba(10, 10, 15, 0.96);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
-            overflow-y: auto;
-            overflow-x: hidden;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 0.6rem;
+            padding: 1rem 1.5rem;
+            background: rgba(10, 10, 15, 0.98);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 0;
+            box-shadow: 0 -15px 40px rgba(0, 0, 0, 0.4);
+            overflow: visible;
         }
 
         .tabs::before,
         .tool-menu::before {
-            content: 'All Tools';
-            position: absolute;
-            top: -0.9rem;
-            left: 1.2rem;
-            padding: 0 0.6rem;
-            font-size: 0.78rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            background: var(--background);
+            display: none;
         }
 
         .tab-button {
-            padding: 0.85rem 0.9rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 18px;
+            padding: 0.85rem 0.8rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
             color: var(--text-muted);
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -397,18 +389,18 @@
             align-items: center;
             justify-content: center;
             gap: 0.3rem;
-            min-width: 95px;
-            min-height: 100px;
+            min-width: 90px;
+            min-height: 85px;
             position: relative;
             text-align: center;
         }
 
         .tab-button span:first-child {
-            font-size: 1.4rem;
+            font-size: 1.35rem;
         }
 
         .tab-button span:last-child {
-            line-height: 1.15;
+            line-height: 1.1;
             word-break: break-word;
         }
 
@@ -463,10 +455,10 @@
         }
 
         .header {
-            padding-top: 6rem;
-            padding-left: 200px;
+            padding-top: 2rem;
+            padding-left: 2rem;
             padding-right: 2rem;
-            min-height: 120px;
+            min-height: 100px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -479,71 +471,6 @@
         .header-actions {
             margin-top: 1rem;
             width: fit-content;
-        }
-
-        .tab-button:hover {
-            background: rgba(99, 102, 241, 0.1);
-            border-color: var(--primary);
-            color: var(--text);
-            transform: translateY(-2px);
-        }
-
-        .tab-button.active {
-            background: rgba(99, 102, 241, 0.15);
-            border-color: var(--primary);
-            color: var(--primary);
-            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
-        }
-
-        .tab-button.recommended {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.08);
-        }
-
-        .tab-button .recommended-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            font-weight: 700;
-        }
-
-        /* Tooltips */
-        .tab-button[data-tooltip]:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--surface);
-            color: var(--text);
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            font-size: 0.8rem;
-            white-space: nowrap;
-            z-index: 1000;
-            margin-bottom: 0.5rem;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-        }
-
-        .tab-button[data-tooltip]:hover::before {
-            content: '';
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 6px solid transparent;
-            border-top-color: var(--surface);
-            margin-bottom: -1px;
         }
 
         /* Container */
@@ -1238,24 +1165,6 @@
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.5rem;
-            }
-            
-            .container {
-                padding: 1rem;
-            }
-            
-            .glass-card {
-                padding: 1.5rem;
-            }
-
-            .back-btn {
-                position: static;
-                margin-bottom: 1rem;
-            }
-
             .metrics-grid {
                 grid-template-columns: 1fr;
             }
