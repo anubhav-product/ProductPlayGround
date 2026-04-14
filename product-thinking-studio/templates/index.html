@@ -85,7 +85,7 @@
             color: var(--text);
             line-height: 1.6;
             min-height: 100vh;
-            display: flex;
+            display: block;
             background-image: 
                 radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
                 radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.1) 0px, transparent 50%);
@@ -93,25 +93,24 @@
 
         /* Sidebar Navigation */
         .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 280px;
-            height: 100vh;
-            background: rgba(10, 10, 15, 0.8);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            background: transparent;
+            border-right: none;
             display: flex;
-            flex-direction: column;
-            padding: 1.5rem 0;
+            flex-direction: row;
+            padding: 1rem 2rem;
             z-index: 1000;
-            overflow-y: auto;
-            backdrop-filter: blur(10px);
+            overflow: visible;
+            backdrop-filter: none;
+            gap: 1rem;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .sidebar-header {
-            padding: 0 1.5rem 1.5rem 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 1.5rem;
+            padding: 0;
+            border-bottom: none;
+            margin-bottom: 0;
         }
 
         .sidebar-logo {
@@ -120,14 +119,16 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            white-space: nowrap;
         }
 
         .sidebar-nav {
             flex: 1;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             gap: 0.5rem;
-            padding: 0 1rem;
+            padding: 0;
+            overflow-x: auto;
         }
 
         .sidebar-item {
@@ -143,6 +144,8 @@
             cursor: pointer;
             transition: all 0.2s ease;
             border: 1px solid transparent;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .sidebar-item:hover {
@@ -162,23 +165,27 @@
             width: 24px;
         }
 
+        .sidebar-item-label {
+            display: inline;
+        }
+
         .sidebar-footer {
-            padding: 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: auto;
+            padding: 0;
+            border-top: none;
+            margin-top: 0;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             gap: 0.75rem;
+            margin-left: auto;
         }
 
         /* Main Content */
         .main-content {
-            flex: 1;
-            margin-left: 280px;
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 2rem;
+            padding: 0;
             min-height: auto;
         }
 
@@ -548,6 +555,7 @@
             position: relative;
             text-align: center;
             width: 100%;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .header h1 {
@@ -558,11 +566,11 @@
             margin-top: 0;
         }
 
-        /* Container */
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 2rem;
+            width: 100%;
         }
 
         /* Glass Card */
