@@ -85,7 +85,6 @@
             color: var(--text);
             line-height: 1.6;
             min-height: 100vh;
-            padding-bottom: 130px;
             background-image: 
                 radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
                 radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.1) 0px, transparent 50%);
@@ -351,20 +350,21 @@
         /* Navigation Tabs / Tool Launcher - Bottom Bar */
         .tabs,
         .tool-menu {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
+            position: relative;
+            bottom: auto;
+            left: auto;
+            right: auto;
+            z-index: 100;
             width: 100%;
             max-height: none;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
             gap: 0.6rem;
-            padding: 1rem 1.5rem;
-            background: rgba(10, 10, 15, 0.98);
+            padding: 1.5rem;
+            margin-top: 2rem;
+            background: rgba(10, 10, 15, 0.95);
             border-top: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 0;
+            border-radius: 12px;
             box-shadow: 0 -15px 40px rgba(0, 0, 0, 0.4);
             overflow: visible;
         }
@@ -429,10 +429,6 @@
         }
 
         .back-btn {
-            position: fixed;
-            top: 1.5rem;
-            left: 1.5rem;
-            z-index: 1001;
             padding: 0.75rem 1.5rem;
             background: rgba(15, 15, 22, 0.95);
             border: 1px solid var(--border);
@@ -446,6 +442,7 @@
             align-items: center;
             gap: 0.5rem;
             box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25);
+            white-space: nowrap;
         }
 
         .back-btn:hover {
@@ -455,13 +452,21 @@
         }
 
         .header {
-            padding-top: 2rem;
+            padding-top: 1.5rem;
             padding-left: 2rem;
             padding-right: 2rem;
-            min-height: 100px;
+            padding-bottom: 1.5rem;
+            min-height: auto;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 2rem;
+            position: relative;
+        }
+
+        .header-content {
+            flex: 1;
+            min-width: 0;
         }
 
         .header h1 {
@@ -898,26 +903,28 @@
                 padding: 1rem;
             }
 
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
             .header h1 {
                 font-size: 1.5rem;
             }
 
             .tabs,
             .tool-menu {
-                position: fixed;
-                bottom: 0;
-                top: auto;
-                left: 0;
-                right: 0;
-                width: 100%;
-                max-height: none;
                 grid-template-columns: repeat(4, 1fr);
                 padding: 0.8rem 0.75rem 1rem;
-                border-radius: 0;
-                background: rgba(10, 10, 15, 0.99);
+                border-radius: 12px;
+                background: rgba(10, 10, 15, 0.95);
                 border-top: 1px solid rgba(255, 255, 255, 0.1);
                 box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.35);
                 overflow: hidden;
+                margin-top: 1rem;
             }
 
             .tabs::before,
@@ -948,24 +955,15 @@
             }
 
             .back-btn {
-                position: fixed;
-                top: 1rem;
-                left: 1rem;
                 width: auto;
                 margin: 0;
                 padding: 0.65rem 1.2rem;
                 font-size: 0.85rem;
-            }
-
-            .tabs,
-            .tool-menu {
-                overflow-x: auto;
-                overflow-y: hidden;
-                -webkit-overflow-scrolling: touch;
+                flex-shrink: 0;
             }
 
             body {
-                padding-bottom: 140px;
+                padding-bottom: 0;
             }
 
             .toast {
@@ -1172,19 +1170,20 @@
     </style>
 </head>
 <body>
-    <a href="/" class="back-btn">
-        <span>←</span>
-        <span>Back to Home</span>
-    </a>
-
     <div class="header">
-        <h1 id="page-title">Product Playground</h1>
-        <p id="page-subtitle">AI-Powered Strategic Analysis</p>
-        <div class="header-actions">
-            <button class="btn-outline" onclick="showWelcomeModal()" style="margin-top: 1rem;">
-                <span>🚀</span>
-                <span>Get Started Guide</span>
-            </button>
+        <a href="/" class="back-btn">
+            <span>←</span>
+            <span>Back to Home</span>
+        </a>
+        <div class="header-content">
+            <h1 id="page-title">Product Playground</h1>
+            <p id="page-subtitle">AI-Powered Strategic Analysis</p>
+            <div class="header-actions">
+                <button class="btn-outline" onclick="showWelcomeModal()" style="margin-top: 1rem;">
+                    <span>🚀</span>
+                    <span>Get Started Guide</span>
+                </button>
+            </div>
         </div>
     </div>
 
