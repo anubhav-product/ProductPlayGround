@@ -85,15 +85,102 @@
             color: var(--text);
             line-height: 1.6;
             min-height: 100vh;
-            padding-bottom: 130px;
+            display: flex;
             background-image: 
                 radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
                 radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.1) 0px, transparent 50%);
         }
 
-        /* Header Actions */
-        .header-actions {
-            margin-top: 1rem;
+        /* Sidebar Navigation */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(10, 10, 15, 0.8);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem 0;
+            z-index: 1000;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 0 1rem;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
+        }
+
+        .sidebar-item.active {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .sidebar-item-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            width: 24px;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            min-height: 100vh;
         }
 
         .btn-outline {
@@ -111,18 +198,6 @@
             gap: 0.5rem;
             white-space: nowrap;
             margin: 0 !important;
-        }
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
         .btn-outline:hover {
@@ -363,30 +438,10 @@
             min-width: 0;
         }
 
-        /* Navigation Tabs / Tool Launcher - Bottom Bar */
+        /* Navigation Tabs / Tool Launcher - Hidden in sidebar view */
         .tabs,
         .tool-menu {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            width: 100%;
-            max-height: none;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-            gap: 0.6rem;
-            padding: 1rem 1.5rem;
-            background: rgba(10, 10, 15, 0.98);
-            border-top: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 0;
-            box-shadow: 0 -15px 40px rgba(0, 0, 0, 0.4);
-            overflow: visible;
-        }
-
-        .tabs::before,
-        .tool-menu::before {
-            display: none;
+            display: none !important;
         }
 
         .tab-button {
@@ -444,13 +499,13 @@
         }
 
         .header-top-left {
-            position: fixed;
+            position: absolute;
             top: 1.5rem;
-            left: 1.5rem;
-            z-index: 1001;
+            left: 310px;
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
+            z-index: 900;
         }
 
         .back-btn {
@@ -477,11 +532,8 @@
         }
 
         .header {
-            padding-top: 2rem;
-            padding-left: 2rem;
-            padding-right: 2rem;
-            padding-bottom: 2rem;
-            min-height: 100vh;
+            padding: 0;
+            min-height: auto;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -1206,23 +1258,68 @@
     </style>
 </head>
 <body>
-    <!-- Top-Left Controls -->
-    <div class="header-top-left">
-        <a href="/" class="back-btn">
-            <span>←</span>
-            <span>Back to Home</span>
-        </a>
-        <button class="btn-outline" onclick="showWelcomeModal()">
-            <span>🚀</span>
-            <span>Get Started Guide</span>
-        </button>
+    <!-- Left Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🎯 PP</div>
+        </div>
+        <div class="sidebar-nav">
+            <button class="sidebar-item active" onclick="switchTab(event, 'challenge-tab')" data-tool="challenge">
+                <span class="sidebar-item-icon">🎯</span>
+                <span class="sidebar-item-label">Challenge</span>
+            </button>
+            <button class="sidebar-item" onclick="switchTab(event, 'kpi-tab')" data-tool="kpi">
+                <span class="sidebar-item-icon">📊</span>
+                <span class="sidebar-item-label">KPI</span>
+            </button>
+            <button class="sidebar-item" onclick="switchTab(event, 'teardown-tab')" data-tool="teardown">
+                <span class="sidebar-item-icon">🔍</span>
+                <span class="sidebar-item-label">Teardown</span>
+            </button>
+            <button class="sidebar-item" onclick="switchTab(event, 'walkthrough-tab')" data-tool="walkthrough">
+                <span class="sidebar-item-icon">✓</span>
+                <span class="sidebar-item-label">Walkthrough</span>
+            </button>
+            <button class="sidebar-item" onclick="switchTab(event, 'framing-tab')" data-tool="framing">
+                <span class="sidebar-item-icon">🖼️</span>
+                <span class="sidebar-item-label">Framing</span>
+            </button>
+            <button class="sidebar-item" onclick="switchTab(event, 'dashboard-tab')" data-tool="dashboard">
+                <span class="sidebar-item-icon">📈</span>
+                <span class="sidebar-item-label">Dashboard</span>
+            </button>
+            <button class="sidebar-item" onclick="switchTab(event, 'confidence-tab')" data-tool="confidence">
+                <span class="sidebar-item-icon">⚡</span>
+                <span class="sidebar-item-label">Confidence</span>
+            </button>
+            <button class="sidebar-item" onclick="switchTab(event, 'defense-tab')" data-tool="defense">
+                <span class="sidebar-item-icon">🛡️</span>
+                <span class="sidebar-item-label">Defense</span>
+            </button>
+            <button class="sidebar-item" onclick="switchTab(event, 'retrospective-tab')" data-tool="retrospective">
+                <span class="sidebar-item-icon">🔄</span>
+                <span class="sidebar-item-label">Retrospective</span>
+            </button>
+        </div>
+        <div class="sidebar-footer">
+            <a href="/" class="back-btn" style="width: 100%; text-align: center; justify-content: center;">
+                <span>←</span>
+                <span>Home</span>
+            </a>
+            <button class="btn-outline" onclick="showWelcomeModal()" style="width: 100%; justify-content: center;">
+                <span>🚀</span>
+                <span>Guide</span>
+            </button>
+        </div>
     </div>
 
-    <!-- Centered Header -->
-    <div class="header">
-        <div class="header-content">
-            <h1 id="page-title">Product Playground</h1>
-            <p id="page-subtitle">AI-Powered Strategic Analysis</p>
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <div class="header">
+            <div class="header-content">
+                <h1 id="page-title">Product Playground</h1>
+                <p id="page-subtitle">AI-Powered Strategic Analysis</p>
+            </div>
         </div>
     </div>
 
