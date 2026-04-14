@@ -461,7 +461,22 @@
         }
 
         .header {
-            padding-top: 5.5rem;
+            padding-top: 6rem;
+            padding-left: 200px;
+            padding-right: 2rem;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .header h1 {
+            margin-bottom: 0.5rem;
+        }
+
+        .header-actions {
+            margin-top: 1rem;
+            width: fit-content;
         }
 
         .tab-button:hover {
@@ -527,30 +542,6 @@
             border: 6px solid transparent;
             border-top-color: var(--surface);
             margin-bottom: -1px;
-        }
-
-        .back-btn {
-            position: absolute;
-            top: 2rem;
-            left: 2rem;
-            padding: 0.75rem 1.5rem;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            color: var(--text);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .back-btn:hover {
-            background: rgba(99, 102, 241, 0.1);
-            border-color: var(--primary);
-            transform: translateX(-4px);
         }
 
         /* Container */
