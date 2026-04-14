@@ -354,25 +354,26 @@
             top: 1.5rem;
             right: 1.5rem;
             z-index: 1000;
-            width: min(480px, calc(100vw - 3rem));
-            max-height: calc(100vh - 3rem);
+            width: min(520px, calc(100vw - 3rem));
+            max-height: calc(100vh - 4rem);
             display: grid;
-            grid-template-columns: repeat(2, minmax(130px, 1fr));
-            gap: 0.75rem;
-            padding: 1rem;
-            background: rgba(10, 10, 15, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 24px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.8rem;
+            padding: 1.2rem;
+            background: rgba(10, 10, 15, 0.96);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
             box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
-            overflow: auto;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         .tabs::before,
         .tool-menu::before {
             content: 'All Tools';
             position: absolute;
-            top: -0.85rem;
-            left: 1rem;
+            top: -0.9rem;
+            left: 1.2rem;
             padding: 0 0.6rem;
             font-size: 0.78rem;
             letter-spacing: 0.12em;
@@ -382,12 +383,12 @@
         }
 
         .tab-button {
-            padding: 0.9rem 1rem;
+            padding: 0.85rem 0.9rem;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border);
             border-radius: 18px;
             color: var(--text-muted);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -395,19 +396,20 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 0.25rem;
-            min-width: 100px;
-            min-height: 90px;
+            gap: 0.3rem;
+            min-width: 95px;
+            min-height: 100px;
             position: relative;
             text-align: center;
         }
 
         .tab-button span:first-child {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
         }
 
         .tab-button span:last-child {
-            line-height: 1.2;
+            line-height: 1.15;
+            word-break: break-word;
         }
 
         .tab-button:hover {
@@ -982,19 +984,29 @@
                 right: 0;
                 width: 100%;
                 max-height: none;
-                grid-template-columns: repeat(4, minmax(80px, 1fr));
-                padding: 0.75rem 0.75rem 0.9rem;
+                grid-template-columns: repeat(4, 1fr);
+                padding: 0.8rem 0.75rem 1rem;
                 border-radius: 0;
-                background: rgba(10, 10, 15, 0.98);
-                border-top: 1px solid rgba(255, 255, 255, 0.08);
+                background: rgba(10, 10, 15, 0.99);
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
                 box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.35);
+                overflow: hidden;
+            }
+
+            .tabs::before,
+            .tool-menu::before {
+                display: none;
             }
 
             .tab-button {
                 min-width: auto;
-                min-height: 70px;
-                padding: 0.75rem 0.6rem;
-                font-size: 0.8rem;
+                min-height: 75px;
+                padding: 0.7rem 0.5rem;
+                font-size: 0.75rem;
+            }
+
+            .tab-button span:first-child {
+                font-size: 1.2rem;
             }
 
             .glass-card {
@@ -1014,6 +1026,8 @@
                 left: 1rem;
                 width: auto;
                 margin: 0;
+                padding: 0.65rem 1.2rem;
+                font-size: 0.85rem;
             }
 
             .tabs,
