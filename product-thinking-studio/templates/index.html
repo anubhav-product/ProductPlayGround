@@ -438,10 +438,18 @@
             min-width: 0;
         }
 
-        /* Navigation Tabs / Tool Launcher - Hidden in sidebar view */
+        /* Navigation Tabs / Tool Launcher - COMPLETELY HIDDEN */
         .tabs,
         .tool-menu {
             display: none !important;
+            visibility: hidden !important;
+            position: absolute !important;
+            pointer-events: none !important;
+        }
+
+        .header-top-left {
+            display: none !important;
+            visibility: hidden !important;
         }
 
         .tab-button {
